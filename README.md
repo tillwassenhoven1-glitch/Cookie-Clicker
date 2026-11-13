@@ -4,7 +4,7 @@ Ein Idle-Klickspiel im Browser – ähnlich wie das Original Cookie Clicker.
 
 ## ▶️ Jetzt spielen
 
-**https://tillwassenhoven1-glitch.github.io/cookie-clicker/**
+**https://tillwassenhoven1-glitch.github.io/Cookie-Clicker/**
 
 Keine Installation, kein Konto nötig – läuft auf Handy, iPad und PC. 🎮
 
