@@ -210,7 +210,7 @@ table.st .btn{padding:3px 7px;font-size:12px}
 
 <script>
 'use strict';
-const VERSION='v0.1 · Open Beta';
+const VERSION='v0.1.1 · Open Beta';
 const KEY='tills-cookie-clicker-v1';
 const $=id=>document.getElementById(id);
 const now=()=>Date.now();
@@ -772,7 +772,7 @@ function renderTab(){
     h+=`<div class="box"><div class="row" style="justify-content:space-between"><b>🔮 Mana: ${Math.floor(S.mana)} / ${mm}</b><span class="small">Rückschlag-Chance 15 %</span></div><div class="bar" style="margin:6px 0 10px"><i style="width:${S.mana/mm*100}%;background:linear-gradient(90deg,#a6f,#d9f)"></i></div>${SPELLS.map((sp,k)=>`<div class="spell"><span class="si">${sp.i}</span><div class="sd"><b>${sp.n}</b><br>${sp.d}</div><button class="btn" ${S.mana<spellCost(sp)?'disabled':''} onclick="cast(${k})">${spellCost(sp)} 🔮</button></div>`).join('')}</div>`;}
    break;}
   case 5:
-   h=`<h2>⚙️ Optionen</h2><div class="box"><div class="row"><button class="btn" onclick="save(true)">💾 Speichern</button><button class="btn" onclick="exportSave()">📤 Exportieren</button><button class="btn" onclick="importSave()">📥 Importieren</button><button class="btn" onclick="renameBakery()">✏️ Bäckerei umbenennen</button></div><p class="small" style="margin-top:8px">Das Spiel speichert automatisch alle 30 Sekunden im Browser. Mit Export/Import kannst du deinen Spielstand auf ein anderes Gerät mitnehmen.</p></div>
+   h=`<h2>⚙️ Optionen</h2><div class="box"><div class="row"><button class="btn" onclick="save(true)">💾 Speichern</button><button class="btn" onclick="exportSave()">📤 Exportieren</button><button class="btn" onclick="importSave()">📥 Importieren</button><button class="btn" onclick="renameBakery()">✏️ Bäckerei umbenennen</button><button class="btn" onclick="cheatLogin()">🔐 Cheat-Menü</button></div><p class="small" style="margin-top:8px">Das Spiel speichert automatisch alle 30 Sekunden im Browser. Mit Export/Import kannst du deinen Spielstand auf ein anderes Gerät mitnehmen.</p></div>
    <div class="box"><label class="row"><input type="checkbox" ${S.particles?'checked':''} onchange="S.particles=this.checked"> Krümel-Effekte beim Klicken</label></div>
    <div class="box"><b style="color:var(--bad)">Gefahrenzone</b><p class="small" style="margin:6px 0">Löscht wirklich ALLES – auch Erfolge und Prestige.</p><button class="btn red" onclick="hardReset()">🗑️ Spielstand löschen</button></div>
    <div class="box small">🍪 Cookie Clicker · ${VERSION}<br>Ein Fan-Projekt, inspiriert vom Original von Orteil.</div>`;
@@ -843,6 +843,28 @@ function importSave(){
 }
 function hardReset(){
  modal('<h2>🗑️ Wirklich alles löschen?</h2><p style="margin-top:8px">Das kann nicht rückgängig gemacht werden!</p>',[{t:'Abbrechen'},{t:'Ja, löschen',c:'red',f:()=>{localStorage.removeItem(KEY);S=newState();wrKey='';$('cursors').innerHTML='';golds.slice().forEach(removeGold);chain=null;scheduleGC();calc();renderAll();$('heaven').classList.remove('show');toast('Neuer Anfang 🍪');}}]);
+}
+
+
+/* ================= CHEAT-MENÜ ================= */
+let cheatOK=false;
+function cheatLogin(){
+ if(cheatOK){cheatMenu();return;}
+ modal(`<h2>🔐 Cheat-Menü</h2><p class="small" style="margin:6px 0">Code eingeben:</p><input id="ccode" type="password" autocomplete="off" style="width:100%;padding:8px;border-radius:8px;border:2px solid var(--line);background:#120b06;color:var(--txt);font-size:16px">`,[{t:'Abbrechen'},{t:'Öffnen',c:'gold',f:()=>{if($('ccode').value.trim().toLowerCase()==='till'){cheatOK=true;setTimeout(cheatMenu,0);}else{toast('❌ Falscher Code');return false;}}}]);
+ setTimeout(()=>{const i=$('ccode');if(i){i.focus();i.onkeydown=e=>{if(e.key==='Enter')$('mbody').querySelector('.btn.gold').click();};}},50);
+}
+const CHEATS=[
+ ['🍪 Kekse',[['+1 Mio',()=>earn(1e6)],['+1 Mrd',()=>earn(1e9)],['+1 Bio',()=>earn(1e12)],['+1 Brd',()=>earn(1e15)],['Kekse ×10',()=>earn(Math.max(S.cookies*9,10))],['Kekse auf 0',()=>{S.cookies=0;}]]],
+ ['🏗️ Gebäude',[['+10 von allen',()=>{S.b=S.b.map(n=>n+10);}],['+100 von allen',()=>{S.b=S.b.map(n=>n+100);}],['Alle Gebäude auf 0',()=>{S.b=B.map(()=>0);}]]],
+ ['✨ Upgrades & Erfolge',[['Verfügbare Upgrades gratis',()=>{let n=0;for(let k=0;k<20;k++){const l=availUps().filter(u=>!u.repeat);if(!l.length)break;l.forEach(u=>{S.up[u.id]=1;n++;if(u.kind==='res')S.resT=0;});calc();}toast(`✨ ${n} Upgrades freigeschaltet`);}],['Alle Erfolge',()=>{A.forEach(a=>S.ach[a.id]=1);renderMilk();}],['Erfolge zurücksetzen',()=>{S.ach={};renderMilk();}]]],
+ ['🌟 Goldkekse & Effekte',[['Goldkeks',()=>spawnGolden('gold')],['Zornkeks',()=>spawnGolden('wrath')],['Frenzy',()=>addBuff('frenzy','Frenzy',77,7,1,0,'🔥')],['Click Frenzy',()=>addBuff('cfrenzy','Click Frenzy',13,1,777,0,'👆')],['Elder Frenzy',()=>addBuff('efrenzy','Elder Frenzy',6,666,1,0,'😈')],['Cookie Storm',()=>{stormEnd=now()+7000;addBuff('storm','Cookie Storm',7,1,1,0,'🌧️');}],['Effekte beenden',()=>{S.buffs=[];}]]],
+ ['👵 Oma-Apokalypse',[['Apokalypse starten',()=>{for(let k=0;k<10;k++)S.up['r'+k]=1;delete S.up.cov;S.pledgeEnd=0;}],['Runzler spawnen',()=>{if(S.wr.length<10)S.wr.push({a:Math.random()*360,e:C.cpsB*60,hp:3});}],['Apokalypse beenden',()=>{['r5','r7','r9'].forEach(k=>delete S.up[k]);popAll();}]]],
+ ['♻️ Prestige & Extras',[['+100 Himmelschips',()=>{S.chips+=100;}],['+10 Prestige-Level',()=>{S.prestige+=10;}],['+10 Zuckerwürfel',()=>{S.lumps+=10;S.lumpsTotal+=10;}],['Alle Gebäude Stufe +1',()=>{S.lv=S.lv.map(l=>l+1);}],['Drache freischalten',()=>{S.hv.drg=1;}],['Drache ausgewachsen',()=>{S.hv.drg=1;S.drag=18;}],['Mana auffüllen',()=>{S.mana=manaMax();}],['Pflanzen sofort reif',()=>{S.garden.p.forEach(p=>{if(p)p.t=0;});}]]],
+ ['⏩ Zeit',[['+1 Stunde KpS',()=>earn(C.raw*3600)],['+1 Tag KpS',()=>earn(C.raw*86400)],['Forschung sofort',()=>{S.resT=0;}],['Goldkeks-Timer sofort',()=>{S.gcNext=now();}]]]
+];
+function cheatDo(g,k){CHEATS[g][1][k][1]();calc();renderAll();toast('🛠️ '+CHEATS[g][1][k][0]);}
+function cheatMenu(){
+ modal(`<h2>🛠️ Cheat-Menü</h2><p class="small" style="margin-bottom:8px">Nur für Tests – macht das Spiel schnell langweilig 😉</p>${CHEATS.map((g,gi)=>`<h3 style="margin:12px 0 6px;color:var(--gold);font-size:15px">${g[0]}</h3><div class="row">${g[1].map((c,ci)=>`<button class="btn" style="padding:5px 9px;font-size:13px" onclick="cheatDo(${gi},${ci})">${c[0]}</button>`).join('')}</div>`).join('')}`,[{t:'Schließen'}]);
 }
 
 /* ================= NEWS ================= */

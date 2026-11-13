@@ -31,4 +31,4 @@ Keine Installation, kein Konto nötig – läuft auf Handy, iPad und PC. 🎮
 
 ---
 
-Version 0.1 · Open Beta · Fan-Projekt, inspiriert vom Original von Orteil
+Version 0.1.1 · Open Beta · Fan-Projekt, inspiriert vom Original von Orteil
