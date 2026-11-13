@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#1d140e">
+<title>🍪 Cookie Clicker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>">
+<style>
+:root{--bg:#1d140e;--panel:#2a1c13;--panel2:#3a281b;--line:#5a3e28;--txt:#f5e6d3;--dim:#b49a80;--gold:#ffd54a;--good:#7be37b;--bad:#ff6b6b;--cs:260px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:background 2s}
+body.g1{--bg:#2b130c}body.g2{--bg:#3a0d08}body.g3{--bg:#4d0606}
+button{font:inherit;color:inherit;cursor:pointer;border:none}
+.btn{background:linear-gradient(#6b4a2e,#4a3020);border:2px solid #8a6440;border-radius:8px;padding:6px 12px;font-weight:600;color:var(--txt)}
+.btn:hover{filter:brightness(1.15)}.btn:disabled{opacity:.4;cursor:default;filter:none}
+.btn.gold{background:linear-gradient(#e0b030,#a07010);border-color:#ffd54a;color:#2a1a00}
+.btn.red{background:linear-gradient(#a03030,#701818);border-color:#d05050}
+#game{display:flex;height:100vh;height:100dvh}
+/* LEFT */
+#left{position:relative;width:34%;min-width:300px;overflow:hidden;display:flex;flex-direction:column;align-items:center;border-right:4px solid var(--line);background:radial-gradient(ellipse at 50% 55%,#4a3020 0%,var(--bg) 70%)}
+body.g1 #left{background:radial-gradient(ellipse at 50% 55%,#5e2a16 0%,var(--bg) 70%)}
+body.g2 #left,body.g3 #left{background:radial-gradient(ellipse at 50% 55%,#7a1010 0%,var(--bg) 70%)}
+#head{z-index:5;text-align:center;padding:10px 8px 2px;width:100%;background:linear-gradient(rgba(0,0,0,.45),transparent)}
+#bakery{font-size:14px;color:var(--dim);cursor:pointer}
+#cookies{font-size:30px;font-weight:800;text-shadow:0 2px 6px #000;line-height:1.15}
+#cookies small{font-size:18px;font-weight:600}
+#cps,#cpc{font-size:14px;color:var(--dim)}
+#cps b{color:var(--txt)}
+#buffs{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;z-index:5;min-height:4px;padding:2px 6px}
+.buff{background:rgba(0,0,0,.55);border:1px solid var(--gold);border-radius:12px;padding:2px 8px;font-size:12px;font-weight:600}
+.buff.badb{border-color:var(--bad)}
+#cookieWrap{position:relative;flex:1;width:100%;min-height:0}
+.ctr{position:absolute;left:50%;top:50%;width:0;height:0}
+#shine{position:absolute;width:calc(var(--cs)*1.9);height:calc(var(--cs)*1.9);left:calc(var(--cs)*-.95);top:calc(var(--cs)*-.95);border-radius:50%;background:repeating-conic-gradient(rgba(255,220,150,.13) 0 10deg,transparent 10deg 30deg);-webkit-mask-image:radial-gradient(circle,#000 25%,transparent 68%);mask-image:radial-gradient(circle,#000 25%,transparent 68%);animation:spin 40s linear infinite;pointer-events:none}
+body.g2 #shine,body.g3 #shine{background:repeating-conic-gradient(rgba(255,60,40,.15) 0 10deg,transparent 10deg 30deg)}
+#bigCookie{position:absolute;width:var(--cs);height:var(--cs);left:calc(var(--cs)/-2);top:calc(var(--cs)/-2);cursor:pointer;transition:transform .08s;z-index:3;filter:drop-shadow(0 8px 14px rgba(0,0,0,.6))}
+#bigCookie:hover{transform:scale(1.04)}#bigCookie.press{transform:scale(.94)}
+#bigCookie svg,.gc svg{width:100%;height:100%;display:block}
+#cursors{position:absolute;left:0;top:0;animation:spin 80s linear infinite;z-index:2;pointer-events:none}
+#cursors span{position:absolute;left:-9px;top:-11px;font-size:17px;line-height:22px}
+#wrinklers{position:absolute;left:0;top:0;z-index:4}
+.wr{position:absolute;width:30px;height:64px;left:-15px;top:-32px;cursor:pointer}
+.wr i{display:block;width:100%;height:100%;border-radius:50% 50% 45% 45%/62% 62% 38% 38%;background:linear-gradient(#efe0d8,#a8847e);box-shadow:inset 0 -10px 10px rgba(90,0,0,.45),0 0 6px rgba(0,0,0,.6);animation:wob .5s ease-in-out infinite alternate}
+.wr i::after{content:'';position:absolute;left:9px;bottom:3px;width:12px;height:8px;border-radius:50%;background:#400}
+.wr i::before{content:'';position:absolute;left:7px;top:12px;width:16px;height:5px;border-top:3px dotted #400}
+.wr.hit i{animation:shake .15s}
+#milk{position:absolute;left:0;right:0;bottom:0;height:0;z-index:1;transition:height 1s,background 1s;pointer-events:none;opacity:.9}
+#milk::before{content:'';position:absolute;left:0;right:0;top:-10px;height:12px;background:radial-gradient(circle at 10px -2px,transparent 10px,var(--mc) 11px) 0 0/20px 12px repeat-x;animation:wave 3s linear infinite}
+#ver{position:fixed;left:6px;bottom:4px;font-size:11px;color:rgba(255,255,255,.55);z-index:6;pointer-events:none;text-shadow:0 1px 2px #000}
+/* MID */
+#mid{flex:1;display:flex;flex-direction:column;min-width:0;border-right:4px solid var(--line);background:var(--panel2)}
+#ticker{background:#140d08;border-bottom:2px solid var(--line);padding:8px 12px;font-size:14px;font-style:italic;color:#e8d0b0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:36px}
+#news{display:inline-block;animation:fadein .6s}
+#tabs{display:flex;flex-wrap:wrap;gap:4px;padding:6px;background:var(--panel);border-bottom:2px solid var(--line)}
+#tabs button{flex:1;min-width:max-content;padding:7px 10px;border-radius:8px;background:#4a3020;font-weight:600;font-size:13px;border:2px solid transparent}
+#tabs button.on{border-color:var(--gold);background:#6b4a2e}
+#tabs button.hl::after{content:' ●';color:var(--gold)}
+#tab{flex:1;overflow-y:auto;padding:14px;min-height:0}
+#tab h2{font-size:20px;margin:4px 0 10px}
+#tab h3{font-size:16px;margin:16px 0 8px;color:var(--gold)}
+.box{background:rgba(0,0,0,.25);border:2px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.stat{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:14px}
+.stat b{text-align:right}
+.grid{display:flex;flex-wrap:wrap;gap:5px}
+.ach{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;background:#4a3020;border:2px solid #8a6440}
+.ach.no{opacity:.3;filter:grayscale(1);background:#222;border-color:#444}
+.small{font-size:12px;color:var(--dim)}
+.bar{height:12px;background:#120b06;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#9ad,#cef)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* RIGHT */
+#right{width:350px;display:flex;flex-direction:column;background:var(--panel);overflow:hidden}
+.ptitle{padding:6px 10px;font-weight:800;font-size:15px;background:#140d08;border-bottom:2px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+#research{font-size:12px;color:#9cf;font-weight:600}
+#ups{display:flex;flex-wrap:wrap;gap:4px;padding:6px;max-height:30%;min-height:58px;overflow-y:auto;border-bottom:2px solid var(--line);align-content:flex-start}
+#ups .empty{font-size:13px;color:var(--dim);padding:10px}
+.up{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(#6b4a2e,#3a281b);border:2px solid var(--tc,#c8a060);cursor:pointer;position:relative}
+.up.off{opacity:.42}
+.up.res{--tc:#6cf}.up.spec{--tc:#f55}
+.up:hover{filter:brightness(1.25)}
+#bbar{display:flex;gap:4px;padding:6px;border-bottom:2px solid var(--line)}
+#bbar button{flex:1;padding:6px 0;border-radius:6px;background:#4a3020;font-weight:700;font-size:13px;border:2px solid transparent}
+#bbar button.on{border-color:var(--gold);background:#6b4a2e}
+#bbar .sep{flex:.2}
+#store{flex:1;overflow-y:auto;min-height:0}
+.bld{display:flex;align-items:center;gap:10px;padding:6px 10px;border-bottom:2px solid #1d140e;cursor:pointer;background:linear-gradient(90deg,#4a3222,#3a281b)}
+.bld:hover{filter:brightness(1.18)}
+.bld .bi{font-size:32px;width:44px;text-align:center}
+.bld .bt{flex:1;min-width:0}
+.bld .bn{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bld .bp{font-size:13px;color:var(--good)}
+.bld .bc{font-size:30px;font-weight:800;color:rgba(255,255,255,.35)}
+.bld.off .bp{color:var(--bad)}
+.bld.off{filter:brightness(.75)}
+.bld.mys .bi,.bld.mys .bn{opacity:.5}
+.bld.sell .bp{color:#ffb84a}
+#mnav{display:none}
+/* GOLDEN */
+.gc{position:fixed;width:66px;height:66px;z-index:60;cursor:pointer;animation:gcp 1.2s ease-in-out infinite;filter:drop-shadow(0 0 14px #ffd54a)}
+.gc.wrath{filter:drop-shadow(0 0 14px #ff2020)}
+.gc.storm{width:42px;height:42px;animation:fall 3s linear forwards}
+.pop{position:fixed;z-index:70;pointer-events:none;font-weight:800;font-size:18px;color:#fff;text-shadow:0 2px 4px #000,0 0 6px #000;animation:rise 1.4s ease-out forwards;white-space:nowrap;transform:translateX(-50%)}
+.pop.big{font-size:22px;color:var(--gold)}
+.crumb{position:fixed;z-index:2;pointer-events:none;font-size:14px;animation:crumb 1s ease-in forwards}
+/* TOOLTIP / MODAL / TOAST */
+#tip{position:fixed;z-index:100;display:none;max-width:320px;background:#120b06;border:2px solid #c8a060;border-radius:10px;padding:10px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.6);pointer-events:none}
+#tip h4{font-size:15px;margin-bottom:4px}#tip h4 small{font-weight:400;color:var(--dim);font-size:12px}
+#tip .pr{color:var(--good);font-weight:700;margin-bottom:4px}#tip .pr.no{color:var(--bad)}
+#tip ul{margin:6px 0 0 16px}#tip p{margin:3px 0}
+#toasts{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(420px,94vw)}
+.toast{background:#120b06;border:2px solid var(--gold);border-radius:10px;padding:8px 14px;font-size:14px;box-shadow:0 4px 14px #000;animation:fadein .3s;text-align:center}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:120;display:none;align-items:center;justify-content:center;padding:14px}
+#modal.show{display:flex}
+#modal .mb{background:var(--panel);border:3px solid #c8a060;border-radius:14px;padding:18px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
+#modal textarea{width:100%;height:120px;background:#120b06;color:var(--txt);border:2px solid var(--line);border-radius:8px;padding:8px;font-family:monospace;font-size:12px;margin:10px 0;user-select:text;-webkit-user-select:text}
+#modal .mbtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+/* HEAVEN */
+#heaven{position:fixed;inset:0;z-index:110;display:none;flex-direction:column;background:radial-gradient(ellipse at center,#2b3b6b 0%,#0b0f22 75%)}
+#heaven.show{display:flex}
+#hhead{padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:rgba(0,0,0,.4);border-bottom:2px solid #8ab}
+#hhead h2{font-size:20px}
+#hscroll{flex:1;overflow:auto;position:relative}
+#htree{position:relative;width:1200px;height:740px;margin:auto}
+#htree svg{position:absolute;left:0;top:0}
+#htree line{stroke:rgba(180,200,255,.25);stroke-width:4}
+#htree line.on{stroke:#ffd54a}
+.hn{position:absolute;width:54px;height:54px;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:#1b2448;border:3px solid #556;cursor:pointer}
+.hn.own{background:#5a4a10;border-color:#ffd54a;box-shadow:0 0 16px #ffd54a}
+.hn.can{border-color:#9cf;box-shadow:0 0 12px #6af;animation:gcp 1.6s infinite}
+.hn.avail{border-color:#89a}
+.hn.lock{opacity:.3;filter:grayscale(1)}
+/* GARDEN / STOCK / SPELLS */
+.seeds{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.seed{padding:6px 10px;border-radius:8px;background:#4a3020;border:2px solid transparent;font-size:13px}
+.seed.on{border-color:var(--good)}
+.plots{display:grid;gap:5px;max-width:340px}
+.plot{aspect-ratio:1;border-radius:8px;background:#5a3a1e;border:2px solid #3a2410;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;position:relative;overflow:hidden}
+.plot.ripe{box-shadow:inset 0 0 12px #af6;border-color:#8c4}
+.plot em{position:absolute;left:0;bottom:0;height:4px;background:#8f4}
+table.st{width:100%;border-collapse:collapse;font-size:13px}
+table.st td,table.st th{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+table.st .btn{padding:3px 7px;font-size:12px}
+.spell{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,.2);margin-bottom:6px}
+.spell .si{font-size:28px}.spell .sd{flex:1;font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes wob{from{transform:scaleY(1)}to{transform:scaleY(.9) scaleX(1.06)}}
+@keyframes shake{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes gcp{0%,100%{transform:scale(1) rotate(-6deg)}50%{transform:scale(1.12) rotate(6deg)}}
+@keyframes rise{from{opacity:1;margin-top:0}to{opacity:0;margin-top:-70px}}
+@keyframes crumb{from{opacity:1}to{opacity:0;transform:translate(var(--dx),120px) rotate(200deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(-6px)}to{opacity:1}}
+@keyframes wave{to{background-position:20px 0}}
+@keyframes fall{from{transform:translateY(-40px)}to{transform:translateY(140px)}}
+/* MOBILE */
+@media (max-width:900px){
+ #game{flex-direction:column}
+ #left{width:100%;min-width:0;height:44vh;height:44dvh;flex:none;border-right:none;border-bottom:3px solid var(--line);order:0}
+ #mnav{display:flex;order:1;gap:4px;padding:5px;background:#140d08;border-bottom:2px solid var(--line)}
+ #mnav button{flex:1;padding:8px;border-radius:8px;background:#4a3020;font-weight:700;border:2px solid transparent}
+ #mnav button.on{border-color:var(--gold);background:#6b4a2e}
+ #right{width:100%;flex:1;min-height:0;order:2}
+ #mid{flex:1;min-height:0;order:3;border-right:none}
+ body.mMid #right{display:none} body:not(.mMid) #mid{display:none}
+ #cookies{font-size:24px}
+ #toasts{top:auto;bottom:12px}
+ #ups{max-height:25%}
+ #tabs button{font-size:12px;padding:6px}
+ .bld .bi{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="game">
+ <div id="left">
+  <div id="head">
+   <div id="bakery" onclick="renameBakery()"></div>
+   <div id="cookies">0 <small>Kekse</small></div>
+   <div id="cps">pro Sekunde: <b>0</b></div>
+   <div id="cpc"></div>
+  </div>
+  <div id="buffs"></div>
+  <div id="cookieWrap">
+   <div class="ctr"><div id="shine"></div><div id="cursors"></div><div id="bigCookie"></div><div id="wrinklers"></div></div>
+  </div>
+  <div id="milk"></div>
+ </div>
+ <div id="mnav"><button id="mShop" class="on" onclick="mobileTab(0)">🏪 Laden</button><button id="mMenu" onclick="mobileTab(1)">📋 Menü</button></div>
+ <div id="mid">
+  <div id="ticker"><span id="news">Willkommen in deiner Bäckerei! 🍪</span></div>
+  <div id="tabs"></div>
+  <div id="tab"></div>
+ </div>
+ <div id="right">
+  <div class="ptitle"><span>✨ Upgrades</span><span id="research"></span></div>
+  <div id="ups"></div>
+  <div id="bbar">
+   <button id="bm1" class="on" onclick="setBuy(1)">Kaufen</button><button id="bm0" onclick="setBuy(0)">Verkaufen</button><span class="sep"></span>
+   <button id="ba1" class="on" onclick="setAmt(1)">1</button><button id="ba10" onclick="setAmt(10)">10</button><button id="ba100" onclick="setAmt(100)">100</button>
+  </div>
+  <div id="store"></div>
+ </div>
+</div>
+<div id="ver"></div>
+<div id="tip"></div>
+<div id="toasts"></div>
+<div id="modal"><div class="mb" id="mbody"></div></div>
+<div id="heaven"><div id="hhead"></div><div id="hscroll"><div id="htree"></div></div></div>
+
+<script>
+'use strict';
+const VERSION='v0.1 · Open Beta';
+const KEY='tills-cookie-clicker-v1';
+const $=id=>document.getElementById(id);
+const now=()=>Date.now();
+const rnd=(a,b)=>a+Math.random()*(b-a);
+
+/* ================= ZAHLEN ================= */
+const SHORT=['','Tsd','Mio','Mrd','Bio','Brd','Trio','Trd','Qio','Qrd','Quio','Qurd','Sxio','Sxrd','Spio','Sprd','Okio','Okrd','Noio','Nord','Dzio','Dzrd'];
+const LONG=['','Tausend','Millionen','Milliarden','Billionen','Billiarden','Trillionen','Trilliarden','Quadrillionen','Quadrilliarden','Quintillionen','Quintilliarden','Sextillionen','Sextilliarden','Septillionen','Septilliarden','Oktillionen','Oktilliarden','Nonillionen','Nonilliarden','Dezillionen','Dezilliarden'];
+function fmt(n,dec=0,long=false){
+ if(!isFinite(n))return '∞';
+ if(n<0)return '-'+fmt(-n,dec,long);
+ if(n<1e6){if(n>=1000||dec===0)n=Math.floor(n);return n.toLocaleString('de-DE',{maximumFractionDigits:n<1000?dec:0});}
+ const e=Math.floor(Math.log10(n)/3);
+ if(e>=SHORT.length)return n.toExponential(3).replace('.',',');
+ const v=Math.floor(n/Math.pow(1000,e)*1000)/1000;
+ return v.toLocaleString('de-DE',{maximumFractionDigits:3})+' '+(long?LONG[e]:SHORT[e]);
+}
+function fmtTime(s){s=Math.max(0,Math.floor(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60,r=[];if(d)r.push(d+' T');if(h)r.push(h+' Std');if(m&&!d)r.push(m+' Min');if(!d&&!h)r.push(x+' s');return r.join(' ');}
+function clock(s){s=Math.max(0,Math.ceil(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return(h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0');}
+const pct=x=>(x*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';
+
+/* ================= GEBÄUDE ================= */
+const B=[
+ ['Cursor','👆',15,0.1,'Klickt automatisch für dich.'],
+ ['Oma','👵',100,1,'Eine nette Oma, die Kekse backt.'],
+ ['Farm','🌾',1100,8,'Baut Kekspflanzen aus Keks-Samen an.'],
+ ['Mine','⛏️',12000,47,'Baut Keksteig und Schokostückchen ab.'],
+ ['Fabrik','🏭',130000,260,'Produziert riesige Mengen Kekse.'],
+ ['Bank','🏦',1.4e6,1400,'Erzeugt Kekse aus Zinsen.'],
+ ['Tempel','🛕',2e7,7800,'Voller kostbarer, uralter Schokolade.'],
+ ['Zauberturm','🧙',3.3e8,44000,'Beschwört Kekse mit Magie.'],
+ ['Raumfrachter','🚀',5.1e9,260000,'Bringt frische Kekse vom Keksplaneten.'],
+ ['Alchemielabor','⚗️',7.5e10,1.6e6,'Verwandelt Gold in Kekse!'],
+ ['Portal','🌀',1e12,1e7,'Öffnet ein Tor ins Keksversum.'],
+ ['Zeitmaschine','⏳',1.4e13,6.5e7,'Holt Kekse aus der Vergangenheit, bevor sie gegessen wurden.'],
+ ['Antimaterie-Kondensator','⚛️',1.7e14,4.3e8,'Verdichtet Antimaterie zu Keksen.'],
+ ['Prisma','🌈',2.1e15,2.9e9,'Verwandelt Licht in Kekse.'],
+ ['Glücksmaschine','🍀',2.6e16,2.1e10,'Erzeugt Kekse aus purem Glück.'],
+ ['Fraktal-Maschine','🔷',3.1e17,1.5e11,'Macht aus Keksen noch mehr Kekse – unendlich.']
+].map((a,i)=>({i,name:a[0],icon:a[1],price:a[2],cps:a[3],desc:a[4]}));
+
+/* ================= UPGRADES ================= */
+const U=[],UP={};
+function addU(o){U.push(o);UP[o.id]=o;}
+const TIER_N=[1,5,25,50,100,150,200,250,300,350,400];
+const TIER_P=[10,50,500,5e4,5e6,5e8,5e10,5e13,5e16,5e19,5e22];
+const TIER_NAME=['Bronze','Silber','Gold','Platin','Diamant','Rubin','Smaragd','Kosmisch','Quanten','Göttlich','Unendlich'];
+const TIER_COL=['#cd7f32','#c0c0c0','#ffd700','#9ef','#7ff','#f45','#3d8','#a6f','#6cf','#fff','#f6f'];
+[['Verstärkter Zeigefinger',1,100],['Karpaltunnel-Creme',1,500],['Beidhändigkeit',10,1e4]].forEach((c,t)=>addU({id:'b0t'+t,name:c[0],icon:'👆',price:c[2],kind:'tool',tier:t,desc:'Maus und Cursor sind <b>doppelt</b> so effizient.',unlock:()=>S.b[0]>=c[1]}));
+const FING=[['Tausend Finger',25,1e5,1],['Million Finger',50,1e7,5],['Milliarde Finger',100,1e8,10],['Billion Finger',150,1e9,20],['Billiarde Finger',200,1e10,20],['Trillion Finger',250,1e13,20],['Trilliarde Finger',300,1e16,20]];
+FING.forEach((f,k)=>addU({id:'f'+k,name:f[0],icon:'🖐️',price:f[2],kind:'tool',tier:k+3,desc:k===0?'Maus und Cursor bekommen <b>+0,1</b> Kekse für jedes Gebäude, das kein Cursor ist.':`Der Tausend-Finger-Bonus wird <b>×${f[3]}</b> multipliziert.`,unlock:()=>S.b[0]>=f[1]}));
+for(let i=1;i<B.length;i++)TIER_N.forEach((n,t)=>addU({id:`b${i}t${t}`,name:`${B[i].name}: ${TIER_NAME[t]}`,icon:B[i].icon,tier:t,price:B[i].price*TIER_P[t],kind:'tier',desc:`${B[i].name} ist <b>doppelt</b> so effizient.`,unlock:()=>S.b[i]>=n}));
+const SYN=['','','Farmer-Omas','Minen-Omas','Arbeiter-Omas','Banker-Omas','Priester-Omas','Hexen-Omas','Weltraum-Omas','Alchemisten-Omas','Portal-Omas','Zeitreise-Omas','Antimaterie-Omas','Regenbogen-Omas','Glücks-Omas','Fraktal-Omas'];
+for(let i=2;i<B.length;i++){const N=i-1;addU({id:'g'+i,name:SYN[i],icon:'👵',price:B[i].price*50,kind:'syn',desc:`${B[i].name} ist <b>doppelt</b> so effizient. Omas bekommen <b>+1 %</b> KpS pro ${N===1?B[i].name:N+' × '+B[i].name}.`,unlock:()=>S.b[1]>=1&&S.b[i]>=15});}
+const MICE=['Plastikmaus','Eisenmaus','Titanmaus','Adamantium-Maus','Unobtainium-Maus','Eludium-Maus','Wunschlegierungs-Maus','Fantastahl-Maus'];
+MICE.forEach((m,k)=>{const need=Math.pow(10,3+2*k);addU({id:'c'+k,name:m,icon:'🖱️',price:5e4*Math.pow(100,k),kind:'click',tier:k,desc:`Klicks bringen zusätzlich <b>+1 %</b> deiner KpS.<br><span class="small">Freigeschaltet durch ${fmt(need)} handgemachte Kekse.</span>`,unlock:()=>S.hand>=need});});
+const COOK=[['Schokokekse',1],['Haferkekse',1],['Erdnussbutterkekse',1],['Mürbeteigkekse',1],['Kokosmakronen',2],['Zimtschnecken',2],['Spekulatius',2],['Vanillekipferl',2],['Lebkuchen',2],['Florentiner',3],['Amarettini',3],['Cantuccini',3],['Macarons',3],['Brownies',3],['Engelsaugen',4],['Bärentatzen',4],['Zimtsterne',4],['Karamellkekse',4],['Nougatkekse',5],['Pistazienkekse',5],['Matcha-Kekse',5],['Schwarzwälder Kekse',5],['Goldstaub-Kekse',5],['Sternenstaub-Kekse',5]];
+const COOKIE_UPS=[];
+COOK.forEach((c,k)=>{const p=999999*Math.pow(5,k);const o={id:'k'+k,name:c[0],icon:'🍪',price:p,kind:'cookie',pct:c[1],desc:`Keks-Produktion <b>+${c[1]} %</b>.`,unlock:()=>S.earned>=p/10};addU(o);COOKIE_UPS.push(o);});
+const KIT=[['Kätzchen-Helfer',0.52,9e6,0.1],['Kätzchen-Arbeiter',1,9e8,0.125],['Kätzchen-Ingenieure',1.52,9e10,0.15],['Kätzchen-Aufseher',2,9e13,0.175],['Kätzchen-Manager',2.52,9e16,0.2],['Kätzchen-Buchhalter',3,9e19,0.2],['Kätzchen-Spezialisten',3.52,9e22,0.2],['Kätzchen-Experten',4,9e25,0.2]];
+KIT.forEach((k,j)=>addU({id:'m'+j,name:k[0],icon:'🐱',price:k[2],kind:'kitten',desc:`Du bekommst <b>mehr KpS</b>, je mehr Milch du hast (Faktor ${String(k[3]).replace('.',',')}).<br><span class="small">Benötigt ${Math.round(k[1]*100)} % Milch.</span>`,unlock:()=>milk()>=k[1]-1e-9}));
+[['Glückstag',7,777777777,'Goldkekse erscheinen <b>doppelt so oft</b> und bleiben <b>doppelt so lange</b>.'],['Zufallsglück',27,77777777777,'Goldkekse erscheinen <b>doppelt so oft</b> und bleiben <b>doppelt so lange</b>.'],['Glückssträhne',77,77777777777777,'Goldkeks-Effekte halten <b>doppelt so lange</b>.']].forEach((g,k)=>addU({id:'gc'+k,name:g[0],icon:'✨',price:g[2],kind:'golden',desc:g[3]+`<br><span class="small">Freigeschaltet nach ${g[1]} Goldkeksen.</span>`,unlock:()=>S.gold>=g[1]}));
+const RES=[
+ ['Bingo-Forschungszentrum','🎱',1e10,'Omas sind <b>4× so effizient</b>. Startet die Oma-Forschung: alle 2 Minuten wird ein neues Forschungs-Upgrade frei.'],
+ ['Spezielle Schokostückchen','🍫',1e11,'Keks-Produktion <b>+1 %</b>.'],
+ ['Designer-Kakaobohnen','🫘',2e11,'Keks-Produktion <b>+2 %</b>.'],
+ ['Ritual-Nudelhölzer','🪵',4e11,'Omas sind <b>doppelt</b> so effizient.'],
+ ['Unterirdische Öfen','🔥',8e11,'Keks-Produktion <b>+3 %</b>.'],
+ ['Ein Geist','👁️',1.6e12,'Omas bekommen <b>+0,02</b> KpS pro Oma.<br><b style="color:#f66">Achtung: Die Omas werden unruhig …</b>'],
+ ['Exotische Nüsse','🥜',3.2e12,'Keks-Produktion <b>+4 %</b>.'],
+ ['Gemeinsame Gehirnwäsche','🧠',6.4e12,'Omas bekommen <b>+0,02</b> KpS pro Oma.<br><b style="color:#f66">Die Omas werden wütend …</b>'],
+ ['Arkaner Zucker','✨',1.28e13,'Keks-Produktion <b>+5 %</b>.'],
+ ['Pakt der Ältesten','😈',2.56e13,'Omas bekommen <b>+0,05</b> KpS pro Oma.<br><b style="color:#f66">DIE OMAS ERWACHEN.</b>']
+];
+const RES_PCT=[0,1,2,0,3,0,4,0,5,0];
+RES.forEach((r,k)=>addU({id:'r'+k,name:r[0],icon:r[1],price:r[2],kind:'res',desc:r[3],unlock:()=>k===0?(S.b[1]>=30&&S.earned>=1e9):(has('r'+(k-1))&&now()>=S.resT)}));
+addU({id:'pledge',name:'Elder Pledge',icon:'🙏',repeat:true,kind:'spec',price:()=>666666*Math.pow(8,Math.min(S.pledges,10)),desc:'Besänftigt die Omas für <b>30 Minuten</b>. Zornkekse und Runzler verschwinden solange.',unlock:()=>rawStage()>0&&!has('cov')&&S.pledgeEnd<now(),buy:()=>{S.pledgeEnd=now()+1800000;S.pledges++;popAll();}});
+addU({id:'cov',name:'Elder Covenant',icon:'📜',kind:'spec',price:6.66e12,desc:'Beendet die Oma-Apokalypse <b>dauerhaft</b>. Dafür <b>−5 %</b> KpS.',unlock:()=>S.pledges>=1&&rawStage()>0&&!has('cov'),buy:()=>popAll()});
+addU({id:'revoke',name:'Covenant widerrufen',icon:'🔥',repeat:true,kind:'spec',price:6.66e9,desc:'Hebt den Elder Covenant wieder auf. Die Apokalypse kehrt zurück.',unlock:()=>has('cov'),buy:()=>{delete S.up.cov;}});
+
+/* ================= HIMMELSBAUM ================= */
+const H=[
+ {id:'leg',n:'Himmlisches Erbe',i:'🌟',c:1,p:[],x:600,y:380,d:'Der Anfang von allem. Schaltet den Himmelsbaum frei.'},
+ {id:'st1',n:'Startkapital I',i:'💰',c:5,p:['leg'],x:480,y:300,d:'Nach jeder Wiedergeburt startest du mit <b>10.000</b> Keksen.'},
+ {id:'st2',n:'Startkapital II',i:'💰',c:50,p:['st1'],x:370,y:240,d:'Start mit <b>10 Mio</b> Keksen.'},
+ {id:'st3',n:'Startkapital III',i:'💎',c:777,p:['st2'],x:260,y:180,d:'Start mit <b>10 Mrd</b> Keksen.'},
+ {id:'kit',n:'Starter-Set',i:'👆',c:10,p:['leg'],x:540,y:240,d:'Start mit <b>10 Cursorn</b>.'},
+ {id:'kch',n:'Starter-Küche',i:'👵',c:77,p:['kit'],x:470,y:140,d:'Start mit <b>5 Omas</b>.'},
+ {id:'o1',n:'Zwillingstore der Transzendenz',i:'🚪',c:3,p:['leg'],x:660,y:260,d:'Deine Bäckerei produziert <b>offline</b> mit <b>5 %</b> der KpS.',off:0.05},
+ {id:'o2',n:'Engel',i:'😇',c:15,p:['o1'],x:710,y:170,d:'Offline-Produktion: <b>15 %</b>.',off:0.15},
+ {id:'o3',n:'Erzengel',i:'👼',c:77,p:['o2'],x:790,y:100,d:'Offline-Produktion: <b>25 %</b>.',off:0.25},
+ {id:'o4',n:'Tugenden',i:'🕊️',c:300,p:['o3'],x:890,y:70,d:'Offline-Produktion: <b>35 %</b>.',off:0.35},
+ {id:'o5',n:'Herrschaften',i:'👑',c:1000,p:['o4'],x:990,y:90,d:'Offline-Produktion: <b>50 %</b>.',off:0.5},
+ {id:'o6',n:'Cherubim',i:'🪽',c:3000,p:['o5'],x:1070,y:150,d:'Offline-Produktion: <b>65 %</b>.',off:0.65},
+ {id:'o7',n:'Seraphim',i:'🔆',c:10000,p:['o6'],x:1110,y:240,d:'Offline-Produktion: <b>80 %</b>.',off:0.8},
+ {id:'o8',n:'Gott',i:'☀️',c:30000,p:['o7'],x:1110,y:340,d:'Offline-Produktion: <b>100 %</b>.',off:1},
+ {id:'hc1',n:'Himmlische Kekse',i:'🍪',c:3,p:['leg'],x:740,y:380,d:'Keks-Produktion dauerhaft <b>+10 %</b>.'},
+ {id:'hc2',n:'Himmlische Bäckerei',i:'🏰',c:2000,p:['hc1'],x:870,y:370,d:'Keks-Produktion dauerhaft <b>+25 %</b>.'},
+ {id:'kat',n:'Kätzchen-Engel',i:'😺',c:99,p:['hc1'],x:850,y:480,d:'Milch wirkt <b>10 %</b> stärker.'},
+ {id:'wrk',n:'Faltige Leckerbissen',i:'🐛',c:66,p:['hc1'],x:980,y:450,d:'Geplatzte Runzler geben <b>×1,2</b> statt ×1,1 zurück.'},
+ {id:'l1',n:'Himmlisches Glück',i:'✨',c:7,p:['leg'],x:680,y:500,d:'Goldkekse erscheinen <b>5 %</b> öfter, bleiben 5 % länger und wirken 5 % länger.'},
+ {id:'l2',n:'Glückszahl',i:'🍀',c:77,p:['l1'],x:760,y:590,d:'Goldkekse: weitere <b>+5 %</b>.'},
+ {id:'l3',n:'Glücksziffer',i:'7️⃣',c:777,p:['l2'],x:860,y:660,d:'Goldkekse: weitere <b>+5 %</b>.'},
+ {id:'p1',n:'Bewahrte Rezepte',i:'📜',c:30,p:['leg'],x:500,y:500,d:'<b>Keks-Upgrades</b> bleiben nach dem Aufsteigen erhalten.'},
+ {id:'p2',n:'Bewahrte Werkzeuge',i:'🧰',c:150,p:['p1'],x:400,y:580,d:'<b>Klick- und Cursor-Upgrades</b> bleiben erhalten.'},
+ {id:'p3',n:'Ewiges Gedächtnis',i:'🧠',c:1500,p:['p2'],x:300,y:660,d:'<b>Alle Gebäude-Upgrades</b> und Oma-Synergien bleiben erhalten.'},
+ {id:'p4',n:'Kätzchen-Erinnerung',i:'🐱',c:777,p:['p1'],x:530,y:640,d:'<b>Kätzchen-Upgrades</b> bleiben erhalten.'},
+ {id:'drg',n:'Wie man einen Drachen backt',i:'🐉',c:9,p:['leg'],x:440,y:360,d:'Schaltet den <b>Krümeldrachen</b> frei (Tab „Zucker & Drache“).'},
+ {id:'sug',n:'Zuckerrausch',i:'🧊',c:100,p:['leg'],x:350,y:450,d:'Zuckerwürfel reifen in <b>20 statt 24 Stunden</b>.'}
+];
+const HV={};H.forEach(h=>HV[h.id]=h);
+
+/* ================= ERFOLGE ================= */
+const A=[];
+function addA(id,name,desc,icon,check){A.push({id,name,desc,icon,check});}
+[[1,'Erster Biss'],[1e3,'Hobbybäcker'],[1e5,'Backstube'],[1e6,'Keks-Millionär'],[1e8,'Krümelmonster'],[1e9,'Keks-Milliardär'],[1e10,'Teigimperium'],[1e11,'Ofenkönig'],[1e12,'Keks-Billionär'],[1e13,'Galaktischer Bäcker'],[1e14,'Kekskosmos'],[1e15,'Keks-Billiardär'],[1e16,'Unendlicher Teig'],[1e18,'Keks-Trillionär'],[1e20,'Krümelgott'],[1e22,'Jenseits der Kekse'],[1e24,'Keks-Quadrillionär']].forEach(([n,t],k)=>addA('bk'+k,t,`Backe insgesamt ${fmt(n)} Kekse.`,'🍪',()=>S.all+S.earned>=n));
+[[1,'Ein Keks pro Sekunde'],[10,'Fließband'],[100,'Backautomat'],[1e3,'Keksfabrik'],[1e4,'Keksfluss'],[1e5,'Kekslawine'],[1e6,'Keks-Tsunami'],[1e7,'Keks-Urknall'],[1e8,'Keks-Singularität'],[1e9,'Kekszeitalter'],[1e10,'Keks-Multiversum'],[1e11,'Allgegenwärtiger Keks'],[1e12,'Keks ohne Ende']].forEach(([n,t],k)=>addA('cp'+k,t,`Erreiche ${fmt(n)} Kekse pro Sekunde.`,'⚡',()=>C.raw>=n));
+[[1,'Klick!'],[100,'Fleißiger Finger'],[1000,'Klickmaschine'],[1e4,'Sehnenscheidenentzündung'],[5e4,'Klick-Legende']].forEach(([n,t],k)=>addA('cl'+k,t,`Klicke ${fmt(n)}-mal auf den Keks.`,'👆',()=>S.clicks>=n));
+[[1e3,'Handarbeit'],[1e5,'Handwerker'],[1e7,'Goldene Hände'],[1e9,'Klick-Imperium'],[1e11,'Gott der Klicks'],[1e13,'Klick-Unendlichkeit']].forEach(([n,t],k)=>addA('hm'+k,t,`Backe ${fmt(n)} Kekse per Hand.`,'✋',()=>S.hand>=n));
+B.forEach((b,i)=>[1,50,100,150,200].forEach((n,k)=>addA(`bd${i}_${k}`,n===1?`Erste(r) ${b.name}`:`${n} × ${b.name}`,`Besitze ${n} × ${b.name}.`,b.icon,()=>S.b[i]>=n)));
+[[100,'Bauherr'],[500,'Architekt'],[1000,'Städteplaner'],[2000,'Weltenbauer'],[4000,'Imperator']].forEach(([n,t],k)=>addA('tb'+k,t,`Besitze insgesamt ${fmt(n)} Gebäude.`,'🏗️',()=>totalB()>=n));
+[[1,'Glückspilz'],[7,'Goldjäger'],[27,'Goldrausch'],[77,'Fortunas Liebling'],[777,'Goldene Legende']].forEach(([n,t],k)=>addA('gk'+k,t,`Klicke ${n} Goldkekse.`,'✨',()=>S.gold>=n));
+[[20,'Aufrüster'],[50,'Tüftler'],[100,'Erfinder'],[200,'Technokrat']].forEach(([n,t],k)=>addA('ug'+k,t,`Besitze ${n} Upgrades.`,'🔧',()=>upCount()>=n));
+[[1,'Wiedergeburt'],[5,'Seelenwanderer'],[10,'Ewiger Bäcker']].forEach(([n,t],k)=>addA('as'+k,t,`Steige ${n}-mal auf.`,'🌟',()=>S.asc>=n));
+[[1,'Wurm-Platzer'],[50,'Runzler-Jäger'],[200,'Kammerjäger']].forEach(([n,t],k)=>addA('wp'+k,t,`Lass ${n} Runzler platzen.`,'🐛',()=>S.popped>=n));
+addA('sp0','Verkäufer','Verkaufe ein Gebäude.','💸',()=>S.sold>0);
+addA('sp1','Zornig','Klicke einen Zornkeks.','😡',()=>S.wrath>0);
+addA('sp2','Friedensstifter','Kaufe den Elder Pledge.','🙏',()=>S.pledges>0);
+addA('sp3','Mittendrin','Erwecke die Omas vollständig (Pakt der Ältesten).','😈',()=>rawStage()>=3);
+addA('sp4','Zuckerschock','Ernte deinen ersten Zuckerwürfel.','🧊',()=>S.lumpsTotal>0);
+addA('sp5','Drachenzähmer','Brüte den Krümeldrachen aus.','🐉',()=>S.drag>=2);
+addA('sp6','Gärtner','Ernte eine reife Pflanze.','🌱',()=>S.harvests>0);
+addA('sp7','Börsenhai','Verkaufe Waren mit Gewinn.','📈',()=>S.stockWin>0);
+addA('sp8','Zauberlehrling','Wirke einen Zauberspruch.','🪄',()=>S.casts>0);
+addA('sp9','Kettenreaktion','Schaffe eine Cookie Chain mit 5 Gliedern.','⛓️',()=>S.maxChain>=5);
+addA('sp10','Sturmjäger','Fange 50 Kekse aus Cookie Storms.','🌧️',()=>S.stormClicks>=50);
+
+/* ================= ZUSTAND ================= */
+function newState(){return{
+ v:1,name:'Deine',cookies:0,earned:0,all:0,hand:0,clicks:0,gold:0,wrath:0,popped:0,stormClicks:0,
+ b:B.map(()=>0),lv:B.map(()=>0),up:{},ach:{},hv:{},
+ prestige:0,chips:0,asc:0,ascending:false,
+ start:now(),runStart:now(),played:0,last:now(),
+ gcNext:0,pledgeEnd:0,pledges:0,resT:0,wr:[],buffs:[],
+ lumps:0,lumpsTotal:0,lumpT:0,drag:0,aura:-1,
+ garden:{seed:0,p:[]},stock:null,mana:0,casts:0,harvests:0,stockWin:0,
+ sold:0,maxChain:0,particles:true,tab:0
+}}
+let S=newState();
+let C={raw:0,gm:1,cpsB:0,cps:0,click:1,each:B.map(()=>0)};
+const has=id=>!!S.up[id];
+const hh=id=>!!S.hv[id];
+const totalB=()=>S.b.reduce((a,b)=>a+b,0);
+const upCount=()=>Object.keys(S.up).length;
+const achCount=()=>Object.keys(S.ach).length;
+const milk=()=>achCount()*0.04;
+function rawStage(){return has('r9')?3:has('r7')?2:has('r5')?1:0;}
+function stage(){if(has('cov')||S.pledgeEnd>now())return 0;return rawStage();}
+
+/* ================= BERECHNUNG ================= */
+function tiers(i){let n=0;const L=i===0?3:TIER_N.length;for(let t=0;t<L;t++)if(S.up['b'+i+'t'+t])n++;return n;}
+function fingerAdd(){
+ if(!has('f0'))return 0;
+ let m=1;for(let k=1;k<FING.length;k++)if(has('f'+k))m*=FING[k][3];
+ return 0.1*(totalB()-S.b[0])*m;
+}
+function unitCps(i){
+ const n=S.b[i];let base=B[i].cps,m=1;
+ if(i===0)base=base*Math.pow(2,tiers(0))+fingerAdd();
+ else m*=Math.pow(2,tiers(i));
+ if(i===1){
+  if(has('r0'))m*=4;if(has('r3'))m*=2;
+  if(has('r5'))base+=0.02*n;if(has('r7'))base+=0.02*n;if(has('r9'))base+=0.05*n;
+  for(let j=2;j<B.length;j++)if(has('g'+j))m*=1+0.01*S.b[j]/(j-1);
+  if(S.aura===3)m*=1+0.01*(totalB()-n);
+ }else if(i>=2&&has('g'+i))m*=2;
+ m*=1+0.01*S.lv[i];
+ return base*m;
+}
+function globalMult(){
+ let m=1+0.01*S.prestige;
+ if(hh('hc1'))m*=1.1;if(hh('hc2'))m*=1.25;
+ for(const u of COOKIE_UPS)if(S.up[u.id])m*=1+u.pct/100;
+ RES_PCT.forEach((p,k)=>{if(p&&has('r'+k))m*=1+p/100;});
+ const mk=milk()*(1+(hh('kat')?0.1:0)+(S.aura===2?0.05:0));
+ KIT.forEach((k,j)=>{if(has('m'+j))m*=1+mk*k[3];});
+ if(has('cov'))m*=0.95;
+ m*=1+0.01*gardenCount(0);
+ if(S.aura===5)m*=2;
+ return m;
+}
+function buffMult(){let m=1,cm=1;for(const b of S.buffs){if(b.m)m*=b.m;if(b.cm)cm*=b.cm;}return[m,cm];}
+function calc(){
+ let raw=0;const each=[];
+ for(let i=0;i<B.length;i++){const u=unitCps(i);each.push(u);raw+=u*S.b[i];}
+ const gm=globalMult();raw*=gm;
+ const[bm,cm]=buffMult();
+ const cpsB=raw*bm;
+ const cps=cpsB*(1-0.05*S.wr.length);
+ let click=Math.pow(2,tiers(0))+fingerAdd();
+ let cp=0;for(let k=0;k<MICE.length;k++)if(has('c'+k))cp+=0.01;
+ click+=cp*cpsB;
+ click*=cm*(S.aura===0?1.05:1)*(1+0.02*gardenCount(1));
+ C={raw,gm,cpsB,cps,click,each};
+ return C;
+}
+function earn(x){if(!(x>0))return;S.cookies+=x;S.earned+=x;}
+
+/* ================= KAUFEN ================= */
+let buyMode=1,buyAmt=1;
+function bCost(i,amt){return B[i].price*Math.pow(1.15,S.b[i])*(Math.pow(1.15,amt)-1)/0.15;}
+function bRefund(i,amt){amt=Math.min(amt,S.b[i]);if(amt<=0)return 0;return 0.25*B[i].price*Math.pow(1.15,S.b[i]-amt)*(Math.pow(1.15,amt)-1)/0.15;}
+function storeClick(i){
+ if(!bShown(i))return;
+ if(buyMode){const c=bCost(i,buyAmt);if(S.cookies<c)return;S.cookies-=c;S.b[i]+=buyAmt;}
+ else{const n=Math.min(buyAmt,S.b[i]);if(!n)return;S.cookies+=bRefund(i,n);S.b[i]-=n;S.sold+=n;}
+ calc();updateStore();renderCursors();
+}
+function bShown(i){return i===0||S.b[i]>0||S.earned+S.cookies>=B[i].price*0.5;}
+function setBuy(m){buyMode=m;$('bm1').classList.toggle('on',m===1);$('bm0').classList.toggle('on',m===0);updateStore();}
+function setAmt(a){buyAmt=a;[1,10,100].forEach(x=>$('ba'+x).classList.toggle('on',x===a));updateStore();}
+function upPriceMult(){let m=1;for(const b of S.buffs)if(b.pm)m*=b.pm;return m;}
+function upPrice(u){return(typeof u.price==='function'?u.price():u.price)*upPriceMult();}
+function availUps(){return U.filter(u=>(u.repeat||!has(u.id))&&u.unlock()).sort((a,b)=>upPrice(a)-upPrice(b));}
+function buyUp(id){
+ const u=UP[id];if(!u||(!u.repeat&&has(id))||!u.unlock())return;
+ const p=upPrice(u);if(S.cookies<p)return;
+ S.cookies-=p;if(!u.repeat)S.up[id]=1;
+ if(u.kind==='res')S.resT=now()+120000;
+ if(u.buy)u.buy();
+ calc();renderUps(true);updateStore();
+ if(u.kind==='res'||u.kind==='spec')toast(`${u.icon} ${u.name}`);
+}
+
+/* ================= BUFFS ================= */
+const BUFF_TXT={frenzy:'KpS ×7',cfrenzy:'Klicks ×777',efrenzy:'KpS ×666',clot:'KpS ×0,5',storm:'Es regnet Kekse!',haggle:'Upgrades 2 % billiger',hagglebad:'Upgrades 2 % teurer'};
+function effDur(){let d=1;if(has('gc2'))d*=2;if(S.aura===4)d*=1.1;['l1','l2','l3'].forEach(h=>{if(hh(h))d*=1.05;});return d;}
+function addBuff(t,name,sec,m,cm,pm,icon){
+ const ex=S.buffs.find(b=>b.t===t);const end=now()+sec*1000;
+ if(ex){ex.end=Math.max(ex.end,end);ex.dur=Math.max(ex.dur,sec*1000);return;}
+ S.buffs.push({t,n:name,end,dur:sec*1000,m:m||1,cm:cm||1,pm:pm||0,ic:icon||'✨'});calc();
+}
+
+/* ================= GOLDKEKSE ================= */
+const CHIPS=[[30,30,6],[60,24,5],[73,50,7],[46,55,6],[28,66,5],[56,79,6],[79,72,4],[42,37,3],[19,45,4],[64,40,3]];
+function cookieSVG(id,base,dark,chip,edge){return`<svg viewBox="0 0 100 100"><defs><radialGradient id="${id}" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="${base}"/><stop offset="1" stop-color="${dark}"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#${id})" stroke="${edge}" stroke-width="3"/>${CHIPS.map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*.8}" fill="${chip}"/>`).join('')}</svg>`;}
+const BIG_SVG=cookieSVG('gBig','#e6b26e','#a86a30','#4a2a14','#8a5422');
+const GOLD_SVG=cookieSVG('gGold','#fff2a0','#d99a10','#b87a08','#ffe066');
+const WRATH_SVG=cookieSVG('gWrath','#ff8a7a','#a01010','#500','#ff4040');
+let golds=[],chain=null,stormEnd=0;
+function gcFreq(){let f=1;if(has('gc0'))f*=2;if(has('gc1'))f*=2;['l1','l2','l3'].forEach(h=>{if(hh(h))f*=1.05;});if(S.aura===1)f*=1.05;f*=1+0.03*gardenCount(2);return f;}
+function gcLife(){let l=13;if(has('gc0'))l*=2;if(has('gc1'))l*=2;['l1','l2','l3'].forEach(h=>{if(hh(h))l*=1.05;});return l;}
+function scheduleGC(){S.gcNext=now()+rnd(300,900)*1000/gcFreq();}
+function spawnGolden(kind){
+ const wrath=kind==='wrath'||(kind==null&&Math.random()<stage()*0.33);
+ const el=document.createElement('div');el.className='gc'+(wrath?' wrath':'');
+ el.innerHTML=wrath?WRATH_SVG:GOLD_SVG;
+ const x=rnd(20,Math.max(40,innerWidth-90)),y=rnd(70,Math.max(90,innerHeight-110));
+ el.style.left=x+'px';el.style.top=y+'px';
+ const life=(kind==='chain'?9:gcLife())*1000;
+ const g={el,wrath,chain:kind==='chain',end:now()+life,life,x,y};
+ el.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();clickGolden(g);});
+ document.body.appendChild(el);golds.push(g);
+}
+function removeGold(g){g.el.remove();golds=golds.filter(x=>x!==g);}
+function clickGolden(g){
+ if(!golds.includes(g))return;
+ removeGold(g);
+ const x=g.x+33,y=g.y;
+ if(g.chain){chainStep(x,y);return;}
+ if(g.wrath)S.wrath++;else S.gold++;
+ const eff=pickEffect(g.wrath);const ed=effDur();let msg='';
+ switch(eff){
+  case'frenzy':addBuff('frenzy','Frenzy',77*ed,7,1,0,'🔥');msg='Frenzy! KpS ×7 für '+Math.round(77*ed)+' s';break;
+  case'lucky':{const v=Math.min(S.cookies*0.15,C.cpsB*900)+13;earn(v);msg='Lucky! +'+fmt(v)+' Kekse';break;}
+  case'cfrenzy':addBuff('cfrenzy','Click Frenzy',13*ed,1,777,0,'👆');msg='Click Frenzy! Klicks ×777';break;
+  case'bboost':{const opts=B.filter(b=>S.b[b.i]>=10);const b=opts[Math.floor(Math.random()*opts.length)];const m=1+0.1*S.b[b.i];addBuff('bb'+b.i,'Hochbetrieb: '+b.name,30*ed,m,1,0,b.icon);msg=`${b.name}-Boost! KpS +${fmt(Math.round((m-1)*100))} %`;break;}
+  case'chain':chain={d:0,total:0,steps:0};{let d=Math.max(1,Math.floor(Math.log10(Math.max(C.cpsB,1)*60)));chain.d=d;}chainStep(x,y);return;
+  case'storm':stormEnd=now()+7000;addBuff('storm','Cookie Storm',7,1,1,0,'🌧️');msg='Cookie Storm! Schnapp dir die Kekse!';break;
+  case'efrenzy':addBuff('efrenzy','Elder Frenzy',6*ed,666,1,0,'😈');msg='Elder Frenzy! KpS ×666';break;
+  case'clot':addBuff('clot','Gerinnsel',66,0.5,1,0,'🩸');msg='Gerinnsel! KpS halbiert';break;
+  case'ruin':{const v=Math.min(S.cookies*0.05,C.cpsB*600)+13;S.cookies=Math.max(0,S.cookies-v);msg='Ruin! −'+fmt(v)+' Kekse';break;}
+ }
+ popup(x,y,msg,true);
+ if(!golds.some(q=>!q.storm))scheduleGC();
+}
+function pickEffect(wrath){
+ let pool=wrath?[['efrenzy',10],['clot',25],['ruin',25],['lucky',15],['frenzy',15],['chain',5],['cfrenzy',5]]:[['frenzy',35],['lucky',35],['cfrenzy',10],['bboost',10],['chain',5],['storm',5]];
+ pool=pool.filter(([e])=>!(e==='bboost'&&!S.b.some(n=>n>=10))&&!(e==='chain'&&S.cookies<1e4));
+ let tot=pool.reduce((a,p)=>a+p[1],0),r=Math.random()*tot;
+ for(const[e,w]of pool){if((r-=w)<=0)return e;}return pool[0][0];
+}
+function chainStep(x,y){
+ if(!chain)return;
+ const cap=Math.max(7,Math.min(C.cpsB*6*3600,S.cookies*0.5));
+ const val=d=>7*(Math.pow(10,d)-1)/9;
+ if(chain.steps===0)while(chain.d>1&&val(chain.d)>cap)chain.d--;
+ const v=val(chain.d);
+ if(v>cap||(chain.steps>0&&Math.random()<0.02)){popup(x,y,`Kette beendet! Gesamt +${fmt(chain.total)}`,true);S.maxChain=Math.max(S.maxChain,chain.steps);chain=null;scheduleGC();return;}
+ earn(v);chain.total+=v;chain.steps++;chain.d++;S.maxChain=Math.max(S.maxChain,chain.steps);
+ popup(x,y,`Cookie Chain: +${fmt(v)}`,true);
+ spawnGolden('chain');
+}
+function spawnStorm(){
+ const el=document.createElement('div');el.className='gc storm';el.innerHTML=GOLD_SVG;
+ const x=rnd(10,innerWidth-50),y=rnd(40,innerHeight-200);el.style.left=x+'px';el.style.top=y+'px';
+ const g={el,storm:true,end:now()+3000,x,y};
+ el.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();if(!golds.includes(g))return;removeGold(g);const v=C.cpsB*60*(1+Math.floor(Math.random()*7))+7;earn(v);S.stormClicks++;popup(x+20,y,'+'+fmt(v));});
+ document.body.appendChild(el);golds.push(g);
+}
+function updateGolds(){
+ const t=now();
+ for(const g of golds.slice()){
+  const rem=g.end-t;
+  if(rem<=0){removeGold(g);if(g.chain&&chain){popup(g.x,g.y,`Kette verpasst! Gesamt +${fmt(chain.total)}`,true);chain=null;scheduleGC();}else if(!g.storm&&!golds.some(q=>!q.storm)&&!chain)scheduleGC();continue;}
+  if(!g.storm)g.el.style.opacity=rem<3000?(0.3+0.7*rem/3000).toFixed(2):1;
+ }
+}
+
+/* ================= RUNZLER ================= */
+function popWrinkler(i,silent){
+ const w=S.wr[i];if(!w)return;
+ const r=w.e*(hh('wrk')?1.2:1.1);earn(r);S.popped++;S.wr.splice(i,1);
+ if(!silent){const el=$('bigCookie').getBoundingClientRect();popup(el.left+el.width/2,el.top+20,'🐛 Geplatzt! +'+fmt(r),true);}
+ calc();renderWrinklers();
+}
+function popAll(){while(S.wr.length)popWrinkler(0,true);}
+function hitWrinkler(i,el){const w=S.wr[i];if(!w)return;w.hp--;el.classList.remove('hit');void el.offsetWidth;el.classList.add('hit');if(w.hp<=0)popWrinkler(i);}
+let wrKey='';
+function renderWrinklers(){
+ const k=S.wr.map(w=>w.a.toFixed(0)).join(',');if(k===wrKey)return;wrKey=k;
+ const cs=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cs'))||260;
+ $('wrinklers').innerHTML=S.wr.map((w,i)=>`<div class="wr" data-tip="wr:${i}" style="transform:rotate(${w.a}deg) translateY(${-(cs/2+22)}px)" onpointerdown="event.stopPropagation();hitWrinkler(${i},this)"><i></i></div>`).join('');
+}
+
+/* ================= GARTEN ================= */
+const SEEDS=[{n:'Backweizen',i:'🌾',cost:1,grow:3,d:'Reif: <b>+1 %</b> KpS'},{n:'Klickbeere',i:'🫐',cost:2,grow:4,d:'Reif: <b>+2 %</b> Klick-Power'},{n:'Goldklee',i:'🍀',cost:5,grow:8,d:'Reif: Goldkekse <b>+3 %</b> häufiger'},{n:'Kekskürbis',i:'🎃',cost:10,grow:15,d:'Ernte: <b>60 Min</b> KpS auf einmal'}];
+const gSize=()=>Math.min(6,2+S.lv[2]);
+const ripe=p=>p&&now()-p.t>=SEEDS[p.s].grow*60000;
+function gardenCount(s){if(!S.lv||S.lv[2]<1)return 0;let n=0;const N=gSize();for(let i=0;i<N*N;i++){const p=S.garden.p[i];if(p&&p.s===s&&ripe(p))n++;}return n;}
+const plantCost=s=>C.raw*60*SEEDS[s].cost;
+function gardenClick(i){
+ const p=S.garden.p[i];
+ if(!p){const s=S.garden.seed,c=plantCost(s);if(S.cookies<c){toast('Nicht genug Kekse zum Pflanzen');return;}S.cookies-=c;S.garden.p[i]={s,t:now()};}
+ else if(ripe(p)){if(p.s===3){const v=C.raw*3600;earn(v);toast('🎃 Kürbis geerntet: +'+fmt(v)+' Kekse');}S.garden.p[i]=null;S.harvests++;calc();}
+ else{toast(`${SEEDS[p.s].i} Noch nicht reif – ${clock((SEEDS[p.s].grow*60000-(now()-p.t))/1000)}`);return;}
+ renderTab();
+}
+
+/* ================= BÖRSE ================= */
+const GOODS=[['Mehl','🌾',12],['Zucker','🍬',20],['Butter','🧈',30],['Schokolade','🍫',45],['Vanille','🌼',60],['Kaffee','☕',80]];
+function stockInit(){if(!S.stock)S.stock={v:GOODS.map(g=>g[2]*rnd(.7,1.3)),d:GOODS.map(()=>0),h:GOODS.map(()=>[]),o:GOODS.map(()=>0),avg:GOODS.map(()=>0),t:now(),profit:0};}
+function stockTick(){const s=S.stock;GOODS.forEach((g,k)=>{s.d[k]=Math.max(-1,Math.min(1,s.d[k]*.85+(Math.random()-.5)*.5));let v=s.v[k];v=v*(1+s.d[k]*.06+(Math.random()-.5)*.08)+(g[2]-v)*.04;s.v[k]=Math.max(1,Math.min(g[2]*6,v));s.h[k].push(s.v[k]);if(s.h[k].length>30)s.h[k].shift();});}
+const dollar=()=>Math.max(1,C.raw);
+const stockMax=()=>10*S.b[5]+50*S.lv[5];
+function buyStock(k,n){const s=S.stock,unit=s.v[k]*dollar();let can=Math.min(stockMax()-s.o[k],Math.floor(S.cookies/unit));if(n!=='max')can=Math.min(can,n);if(can<=0)return;S.cookies-=unit*can;s.avg[k]=(s.avg[k]*s.o[k]+s.v[k]*can)/(s.o[k]+can);s.o[k]+=can;renderTab();}
+function sellStock(k,n){const s=S.stock;const q=n==='max'?s.o[k]:Math.min(n,s.o[k]);if(q<=0)return;earn(s.v[k]*dollar()*q);const pr=(s.v[k]-s.avg[k])*q;s.profit+=pr;if(pr>0)S.stockWin++;s.o[k]-=q;if(!s.o[k])s.avg[k]=0;renderTab();}
+function spark(h){if(h.length<2)return'';const mn=Math.min(...h),mx=Math.max(...h),r=mx-mn||1;const pts=h.map((v,i)=>`${(i/(h.length-1)*90).toFixed(1)},${(22-(v-mn)/r*20).toFixed(1)}`).join(' ');const up=h[h.length-1]>=h[0];return`<svg width="90" height="24"><polyline points="${pts}" fill="none" stroke="${up?'#7be37b':'#ff6b6b'}" stroke-width="2"/></svg>`;}
+
+/* ================= ZAUBER ================= */
+const manaMax=()=>Math.floor(10+S.b[7]/4+S.lv[7]*5);
+const SPELLS=[
+ {n:'Kekse beschwören',i:'🍪',c:[3,.2],d:'Bekomme min(15 % deiner Kekse, 30 Min KpS).',f(){const g=Math.min(S.cookies*.15,C.cpsB*1800)+7;earn(g);return'+'+fmt(g)+' Kekse!';},b(){const l=Math.min(S.cookies*.15,C.cpsB*900);S.cookies-=l;return'Schiefgegangen: −'+fmt(l)+' Kekse';}},
+ {n:'Schicksal erzwingen',i:'✨',c:[10,.6],d:'Ein Goldkeks erscheint sofort.',f(){spawnGolden('gold');return'Ein Goldkeks erscheint!';},b(){spawnGolden('wrath');return'Oh nein – ein Zornkeks!';}},
+ {n:'Zeit dehnen',i:'⏳',c:[8,.2],d:'Aktive Effekte halten 10 % länger (max. +5 Min).',f(){S.buffs.forEach(b=>{b.end+=Math.min(300000,(b.end-now())*.1);});return'Die Zeit dehnt sich …';},b(){S.buffs.forEach(b=>{b.end-=(b.end-now())*.2;});return'Effekte verkürzt!';}},
+ {n:'Haggler-Charme',i:'🏷️',c:[10,.1],d:'Upgrades für 1 Stunde 2 % billiger.',f(){addBuff('haggle','Haggler-Charme',3600,1,1,.98,'🏷️');return'Upgrades sind 2 % billiger!';},b(){addBuff('hagglebad','Haggler-Fluch',3600,1,1,1.02,'💸');return'Fluch! Upgrades 2 % teurer.';}}
+];
+const spellCost=s=>Math.floor(s.c[0]+s.c[1]*manaMax());
+function cast(k){const s=SPELLS[k],c=spellCost(s);if(S.mana<c)return;S.mana-=c;S.casts++;const bad=Math.random()<.15;toast(`${s.i} ${bad?s.b():s.f()}`);calc();renderTab();}
+
+/* ================= ZUCKER & DRACHE ================= */
+const lumpsOn=()=>S.all+S.earned>=1e9;
+const lumpMature=()=>(hh('sug')?20:24)*3600000;
+function levelUp(i){const c=S.lv[i]+1;if(S.lumps<c)return;S.lumps-=c;S.lv[i]++;calc();toast(`🧊 ${B[i].name} ist jetzt Stufe ${S.lv[i]}!`+([2,5,7].includes(i)&&S.lv[i]===1?' Minispiel freigeschaltet!':''));renderTab();}
+function dragonName(l){return l===0?'Drachenei':l===1?'Rissiges Drachenei':l===2?'Baby-Krümeldrache':l<18?`Krümeldrache (Stufe ${l-2})`:'Ausgewachsener Krümeldrache';}
+function dragonNext(l){
+ if(l===0)return{t:'Ei wärmen',d:'Kostet 1 Mio Kekse',ok:()=>S.cookies>=1e6,pay:()=>S.cookies-=1e6};
+ if(l===1)return{t:'Ausbrüten',d:'Kostet 2 Mio Kekse',ok:()=>S.cookies>=2e6,pay:()=>S.cookies-=2e6};
+ if(l<18){const i=l-2;return{t:`Füttern: 50 × ${B[i].name}`,d:`Opfert 50 ${B[i].name} ${B[i].icon}`,ok:()=>S.b[i]>=50,pay:()=>S.b[i]-=50};}
+ return null;
+}
+const AURAS=[{n:'Drachenklaue',i:'🐾',lv:3,d:'Klicks +5 %'},{n:'Drachengier',i:'💰',lv:5,d:'Goldkekse 5 % häufiger'},{n:'Milchatem',i:'🥛',lv:7,d:'Kätzchen-Upgrades 5 % stärker'},{n:'Oma-Bataillon',i:'👵',lv:9,d:'Omas +1 % pro Nicht-Oma-Gebäude'},{n:'Drachenernte',i:'⏱️',lv:12,d:'Goldkeks-Effekte 10 % länger'},{n:'Strahlender Appetit',i:'🌟',lv:18,d:'Alle KpS ×2'}];
+function feedDragon(){const n=dragonNext(S.drag);if(!n||!n.ok())return;n.pay();S.drag++;calc();toast('🐉 '+dragonName(S.drag));renderTab();}
+function setAura(k){
+ if(k===S.aura||S.drag<AURAS[k].lv)return;
+ let hi=-1;for(let i=B.length-1;i>=0;i--)if(S.b[i]>0){hi=i;break;}
+ if(hi>=0)S.b[hi]--;
+ S.aura=k;calc();toast(`${AURAS[k].i} Aura: ${AURAS[k].n}`+(hi>=0?` (1 × ${B[hi].name} geopfert)`:''));renderTab();
+}
+
+/* ================= PRESTIGE ================= */
+const prestigeFor=c=>Math.floor(Math.cbrt(c/1e12));
+function ascend(){
+ const tot=S.all+S.earned;if(tot<1e12)return;
+ const lvl=prestigeFor(tot),gain=Math.max(0,lvl-S.prestige);
+ modal(`<h2>🌟 Aufsteigen?</h2><p style="margin:10px 0">Dein Spiel wird zurückgesetzt (Kekse, Gebäude, Upgrades). Du behältst Erfolge, Prestige und Himmelschips.</p><p>Du bekommst <b>+${fmt(gain)}</b> Prestige-Level und <b>+${fmt(gain)}</b> Himmelschips.</p>`,[{t:'Abbrechen'},{t:'Aufsteigen 🌟',c:'gold',f:()=>{
+  S.chips+=gain;S.prestige=Math.max(S.prestige,lvl);S.all+=S.earned;S.asc++;
+  const keep={};for(const id in S.up){const u=UP[id];if(!u)continue;
+   if((u.kind==='cookie'&&hh('p1'))||(u.kind==='tool'||u.kind==='click')&&hh('p2')||((u.kind==='tier'||u.kind==='syn')&&hh('p3'))||(u.kind==='kitten'&&hh('p4')))keep[id]=1;}
+  S.up=keep;S.cookies=0;S.earned=0;S.b=B.map(()=>0);S.buffs=[];S.wr=[];S.pledgeEnd=0;S.pledges=0;S.resT=0;S.runStart=now();
+  if(S.stock)S.stock.o=GOODS.map(()=>0);
+  golds.slice().forEach(removeGold);chain=null;
+  S.ascending=true;calc();save();showHeaven(false);renderAll();
+ }}]);
+}
+function reincarnate(){
+ S.ascending=false;
+ S.cookies=hh('st3')?1e10:hh('st2')?1e7:hh('st1')?1e4:0;
+ if(hh('kit'))S.b[0]=10;if(hh('kch'))S.b[1]=5;
+ S.runStart=now();scheduleGC();calc();save();
+ $('heaven').classList.remove('show');renderAll();toast('🍪 Willkommen in deinem neuen Leben!');
+}
+function buyHeaven(id){
+ const h=HV[id];if(hh(id))return;
+ if(!S.ascending){toast('Himmels-Upgrades kann man nur beim Aufsteigen kaufen.');return;}
+ if(!h.p.every(hh)){toast('Erst die vorherigen Upgrades kaufen.');return;}
+ if(S.chips<h.c){toast('Nicht genug Himmelschips.');return;}
+ S.chips-=h.c;S.hv[id]=1;showHeaven(false);
+}
+function showHeaven(readonly){
+ const el=$('heaven');const first=!el.classList.contains('show');el.classList.add('show');
+ $('hhead').innerHTML=`<div><h2>🌟 Himmelsbaum</h2><div class="small">Prestige-Level ${fmt(S.prestige)} (+${fmt(S.prestige)} % KpS) · ${S.ascending?'Kaufe Upgrades mit Himmelschips.':'Nur ansehen – kaufen kannst du beim Aufsteigen.'}</div></div><div class="row"><b style="font-size:18px">💠 ${fmt(S.chips)} Himmelschips</b>${S.ascending?'<button class="btn gold" onclick="reincarnate()">Wiedergeburt ▶</button>':'<button class="btn" onclick="$(\'heaven\').classList.remove(\'show\')">Schließen ✖</button>'}</div>`;
+ let lines='',nodes='';
+ for(const h of H){
+  for(const p of h.p){const q=HV[p];lines+=`<line x1="${q.x}" y1="${q.y}" x2="${h.x}" y2="${h.y}" class="${hh(h.id)?'on':''}"/>`;}
+  const st=hh(h.id)?'own':h.p.every(hh)?(S.chips>=h.c?'can':'avail'):'lock';
+  nodes+=`<div class="hn ${st}" style="left:${h.x}px;top:${h.y}px" data-tip="h:${h.id}" onclick="buyHeaven('${h.id}')">${h.i}</div>`;
+ }
+ $('htree').innerHTML=`<svg width="1200" height="740">${lines}</svg>${nodes}`;
+ if(first){const sc=$('hscroll');sc.scrollLeft=600-sc.clientWidth/2;sc.scrollTop=380-sc.clientHeight/2;}
+}
+function offlinePct(){let p=0;H.forEach(h=>{if(h.off&&hh(h.id))p=Math.max(p,h.off);});return p;}
+
+/* ================= KLICK ================= */
+function clickCookie(e){
+ if(S.ascending)return;
+ const v=C.click;earn(v);S.hand+=v;S.clicks++;
+ const el=$('bigCookie');el.classList.add('press');setTimeout(()=>el.classList.remove('press'),80);
+ popup(e.clientX,e.clientY-10,'+'+fmt(v,1));
+ if(S.particles)crumb(e.clientX,e.clientY);
+}
+function popup(x,y,txt,big){const d=document.createElement('div');d.className='pop'+(big?' big':'');d.textContent=txt;d.style.left=Math.max(60,Math.min(innerWidth-60,x))+'px';d.style.top=y+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1400);}
+function crumb(x,y){const d=document.createElement('div');d.className='crumb';d.textContent='🍪';d.style.left=x+'px';d.style.top=y+'px';d.style.setProperty('--dx',rnd(-60,60)+'px');d.style.fontSize=rnd(10,18)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1000);}
+
+/* ================= UI: LADEN ================= */
+function initStore(){
+ $('store').innerHTML=B.map((b,i)=>`<div class="bld" id="bl${i}" data-tip="b:${i}" onclick="storeClick(${i})"><div class="bi"></div><div class="bt"><div class="bn"></div><div class="bp"></div></div><div class="bc"></div></div>`).join('');
+}
+function updateStore(){
+ let lastShown=-1;for(let i=0;i<B.length;i++)if(bShown(i))lastShown=i;
+ for(let i=0;i<B.length;i++){
+  const el=$('bl'+i),sh=bShown(i);
+  el.style.display=(sh||i<=lastShown+2)?'':'none';
+  el.classList.toggle('mys',!sh);el.classList.toggle('sell',!buyMode);
+  const icon=i===1&&stage()>=2?'🧟‍♀️':B[i].icon;
+  el.children[0].textContent=sh?icon:'❓';
+  el.children[1].children[0].textContent=sh?B[i].name:'???';
+  let price,off;
+  if(buyMode){price=bCost(i,buyAmt);off=S.cookies<price;el.children[1].children[1].textContent='🍪 '+fmt(price)+(buyAmt>1?` (×${buyAmt})`:'');}
+  else{const n=Math.min(buyAmt,S.b[i]);price=bRefund(i,n);off=n===0;el.children[1].children[1].textContent='💰 +'+fmt(price)+(n>1?` (×${n})`:'');}
+  el.classList.toggle('off',off||!sh);
+  el.children[2].textContent=S.b[i]||'';
+ }
+}
+let upKey='';
+function renderUps(force){
+ const list=availUps();const key=list.map(u=>u.id).join(',');
+ if(force||key!==upKey){
+  upKey=key;
+  $('ups').innerHTML=list.length?list.map(u=>`<div class="up ${u.kind==='res'?'res':u.kind==='spec'?'spec':''}" id="u_${u.id}" data-tip="u:${u.id}" style="${u.tier!=null?'--tc:'+TIER_COL[u.tier%TIER_COL.length]:''}" onclick="buyUp('${u.id}')">${u.icon}</div>`).join(''):'<div class="empty">Noch keine Upgrades verfügbar – kauf Gebäude! 🏗️</div>';
+ }
+ for(const u of list){const el=$('u_'+u.id);if(el)el.classList.toggle('off',S.cookies<upPrice(u));}
+ let r='';
+ if(has('r0')){const k=RES.findIndex((x,j)=>!has('r'+j));if(k>0&&now()<S.resT)r='🔬 Forschung: '+clock((S.resT-now())/1000);}
+ $('research').textContent=r;
+}
+function renderCursors(){
+ const n=Math.min(S.b[0],60);const el=$('cursors');if(el.childElementCount===n)return;
+ const cs=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cs'))||260;
+ let h='';for(let k=0;k<n;k++){const ring=k<30?0:1;const a=(k%30)*12+(ring?6:0);h+=`<span style="transform:rotate(${a}deg) translateY(${-(cs/2+14+ring*20)}px) rotate(180deg)">👆</span>`;}
+ el.innerHTML=h;
+}
+function renderBuffs(){
+ const t=now();
+ $('buffs').innerHTML=S.buffs.map(b=>`<span class="buff ${b.m<1||b.pm>1?'badb':''}" data-tip="buff:${b.t}">${b.ic} ${b.n} ${clock((b.end-t)/1000)}</span>`).join('')+(S.pledgeEnd>t?`<span class="buff">🙏 Pledge ${clock((S.pledgeEnd-t)/1000)}</span>`:'');
+}
+const MILK_COL=['#fff8ee','#f3dcae','#8b5a2b','#f5a3b5','#ffd27f','#b3e0a0','#c9a0dc','#9fd8f5','#f5f5a0','#ffb0e0'];
+function renderMilk(){
+ const m=milk();const el=$('milk');el.style.height=Math.min(m,1)*22+'%';
+ const c=MILK_COL[Math.min(Math.floor(m),MILK_COL.length-1)];el.style.background=c;el.style.setProperty('--mc',c);
+}
+function updateHead(){
+ $('cookies').innerHTML=fmt(Math.floor(S.cookies),0,true)+' <small>Kekse</small>';
+ $('cps').innerHTML='pro Sekunde: <b>'+fmt(C.cps,1)+'</b>'+(S.wr.length?` <span style="color:#f88">(−${S.wr.length*5} % Runzler)</span>`:'');
+ $('cpc').textContent='pro Klick: '+fmt(C.click,1);
+ document.title=fmt(Math.floor(S.cookies))+' Kekse – Cookie Clicker';
+}
+function renameBakery(){
+ modal(`<h2>🏠 Bäckerei umbenennen</h2><input id="bname" maxlength="24" value="${S.name.replace(/"/g,'')}" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;border:2px solid var(--line);background:#120b06;color:var(--txt);font-size:16px">`,[{t:'Abbrechen'},{t:'Speichern',c:'gold',f:()=>{S.name=($('bname').value.trim()||'Deine').slice(0,24);renderBakery();}}]);
+}
+function renderBakery(){$('bakery').textContent=(S.name==='Deine'?'Deine Bäckerei':`Bäckerei von ${S.name}`)+' ✏️';}
+
+/* ================= TABS ================= */
+const TABS=['📊 Statistik','🏆 Erfolge','🌟 Aufsteigen','🧊 Zucker & Drache','🎮 Minispiele','⚙️ Optionen'];
+function renderTabs(){$('tabs').innerHTML=TABS.map((t,i)=>`<button class="${S.tab===i?'on':''} ${i===2&&S.all+S.earned>=1e12&&prestigeFor(S.all+S.earned)>S.prestige?'hl':''}" onclick="setTab(${i})">${t}</button>`).join('');}
+function setTab(i){S.tab=i;renderTabs();renderTab();$('tab').scrollTop=0;}
+let achShown=-1;
+function stat(a,b){return`<div class="stat"><span>${a}</span><b>${b}</b></div>`;}
+function renderTab(){
+ const t=$('tab'),st=t.scrollTop;let h='';
+ switch(S.tab){
+  case 0:{
+   const ownUps=U.filter(u=>has(u.id));
+   h=`<h2>📊 Statistik</h2><div class="box">${stat('Kekse in der Bank',fmt(S.cookies,0,true))+stat('Kekse gebacken (dieser Durchgang)',fmt(S.earned,0,true))+stat('Kekse gebacken (insgesamt)',fmt(S.all+S.earned,0,true))+stat('Handgemachte Kekse',fmt(S.hand))+stat('Klicks auf den Keks',fmt(S.clicks))+stat('Kekse pro Sekunde',fmt(C.cps,1))+stat('Kekse pro Klick',fmt(C.click,1))+stat('Gebäude',fmt(totalB()))+stat('Upgrades gekauft',fmt(upCount()))}</div>
+   <div class="box">${stat('Goldkekse geklickt',fmt(S.gold))+stat('Zornkekse geklickt',fmt(S.wrath))+stat('Runzler geplatzt',fmt(S.popped))+stat('Längste Cookie Chain',S.maxChain)+stat('Spielzeit (insgesamt)',fmtTime(S.played))+stat('Dieser Durchgang seit',fmtTime((now()-S.runStart)/1000))+stat('Prestige-Level',fmt(S.prestige)+` (+${fmt(S.prestige)} % KpS)`)+stat('Himmelschips',fmt(S.chips))+stat('Aufstiege',S.asc)+stat('Erfolge',`${achCount()} / ${A.length}`)+stat('Milch',pct(milk()))+stat('Offline-Produktion',pct(offlinePct()))}</div>
+   <h3>Gekaufte Upgrades (${ownUps.length})</h3><div class="grid">${ownUps.map(u=>`<div class="ach" data-tip="u:${u.id}" style="${u.tier!=null?'border-color:'+TIER_COL[u.tier%TIER_COL.length]:''}">${u.icon}</div>`).join('')||'<span class="small">Noch keine.</span>'}</div>`;
+   break;}
+  case 1:
+   achShown=achCount();
+   h=`<h2>🏆 Erfolge <span class="small">${achCount()} / ${A.length} · Milch ${pct(milk())}</span></h2><p class="small" style="margin-bottom:10px">Jeder Erfolg gibt +4 % Milch 🥛. Kätzchen-Upgrades machen aus Milch mehr KpS.</p><div class="grid">${A.map((a,i)=>`<div class="ach ${S.ach[a.id]?'':'no'}" data-tip="a:${i}">${S.ach[a.id]?a.icon:'🔒'}</div>`).join('')}</div>`;
+   break;
+  case 2:{
+   const tot=S.all+S.earned,lvl=prestigeFor(tot),gain=Math.max(0,lvl-S.prestige),next=Math.pow(Math.max(lvl,S.prestige)+1,3)*1e12;
+   h=`<h2>🌟 Prestige & Aufsteigen</h2><div class="box">${stat('Prestige-Level',fmt(S.prestige)+` (+${fmt(S.prestige)} % KpS)`)+stat('Himmelschips',fmt(S.chips))+stat('Kekse gebacken (alle Durchgänge)',fmt(tot,0,true))+stat('Beim Aufsteigen jetzt',`+${fmt(gain)} Level`)+stat('Nächstes Level bei',fmt(next,0,true))}</div>
+   <div class="box"><p style="margin-bottom:10px">Ab <b>1 Billion</b> gebackenen Keksen kannst du aufsteigen. Das Spiel wird zurückgesetzt, aber du behältst Prestige (+1 % KpS pro Level) und bekommst Himmelschips für den Himmelsbaum. ♻️</p>
+   <div class="row"><button class="btn gold" ${tot<1e12?'disabled':''} onclick="ascend()">🌟 Aufsteigen${tot<1e12?' (ab 1 Billion)':''}</button><button class="btn" onclick="showHeaven(true)">🌳 Himmelsbaum ansehen</button></div></div>`;
+   break;}
+  case 3:{
+   h='<h2>🧊 Zuckerwürfel</h2>';
+   if(!lumpsOn())h+=`<div class="box">🔒 Zuckerwürfel werden ab <b>1 Milliarde</b> gebackenen Keksen freigeschaltet.</div>`;
+   else{const el=now()-S.lumpT,mt=lumpMature();
+    h+=`<div class="box"><div class="row" style="justify-content:space-between"><b style="font-size:20px">🧊 ${S.lumps} Zuckerwürfel</b><span class="small">nächster in ${fmtTime((mt-el)/1000)}</span></div><div class="bar" style="margin-top:8px"><i style="width:${Math.min(100,el/mt*100)}%"></i></div><p class="small" style="margin-top:6px">Ein Zuckerwürfel wächst alle ${hh('sug')?20:24} Stunden – auch offline. Damit levelst du Gebäude (+1 % pro Level). Stufe 1 bei Farm 🌾, Bank 🏦 und Zauberturm 🧙 schaltet Minispiele frei.</p></div>
+    <div class="box">${B.map((b,i)=>S.b[i]>0||S.lv[i]>0?`<div class="stat"><span>${b.icon} ${b.name} <span class="small">Stufe ${S.lv[i]} (+${S.lv[i]} %)</span></span><button class="btn" style="padding:3px 10px;font-size:12px" ${S.lumps<S.lv[i]+1?'disabled':''} onclick="levelUp(${i})">Level-Up (${S.lv[i]+1} 🧊)</button></div>`:'').join('')||'<span class="small">Kauf zuerst ein paar Gebäude.</span>'}</div>`;}
+   h+='<h2 style="margin-top:18px">🐉 Krümeldrache</h2>';
+   if(!hh('drg'))h+=`<div class="box">🔒 Schalte den Drachen im Himmelsbaum frei („Wie man einen Drachen backt“).</div>`;
+   else{const n=dragonNext(S.drag);
+    h+=`<div class="box"><div style="font-size:54px;text-align:center">${S.drag<2?'🥚':S.drag<18?'🐲':'🐉'}</div><p style="text-align:center"><b>${dragonName(S.drag)}</b></p>${n?`<p style="text-align:center;margin:8px 0"><button class="btn gold" ${n.ok()?'':'disabled'} onclick="feedDragon()">${n.t}</button><br><span class="small">${n.d}</span></p>`:'<p style="text-align:center" class="small">Dein Drache ist ausgewachsen! 🎉</p>'}</div>
+    <div class="box"><b>Auren</b> <span class="small">(Wechseln opfert 1 Stück deines teuersten Gebäudes)</span>${AURAS.map((a,k)=>`<div class="stat"><span>${a.i} <b>${a.n}</b> – <span class="small">${a.d}</span></span>${S.drag<a.lv?`<span class="small">ab Drachen-Stufe ${a.lv-2>0?a.lv-2:a.lv}</span>`:S.aura===k?'<b style="color:var(--good)">aktiv ✔</b>':`<button class="btn" style="padding:3px 10px;font-size:12px" onclick="setAura(${k})">Wählen</button>`}</div>`).join('')}</div>`;}
+   break;}
+  case 4:{
+   h='<h2>🎮 Minispiele</h2>';
+   // Garten
+   h+='<h3>🌾 Garten (Farm)</h3>';
+   if(S.lv[2]<1)h+=`<div class="box">🔒 Level die <b>Farm</b> mit einem Zuckerwürfel auf Stufe 1.</div>`;
+   else{const N=gSize();
+    h+=`<div class="box"><div class="seeds">${SEEDS.map((s,k)=>`<button class="seed ${S.garden.seed===k?'on':''}" data-tip="seed:${k}" onclick="S.garden.seed=${k};renderTab()">${s.i} ${s.n}<br><span class="small">🍪 ${fmt(plantCost(k))}</span></button>`).join('')}</div>
+    <div class="plots" style="grid-template-columns:repeat(${N},1fr)">${Array.from({length:N*N},(_,i)=>{const p=S.garden.p[i];if(!p)return`<div class="plot" onclick="gardenClick(${i})" data-tip="plot:${i}"></div>`;const r=ripe(p),pr=Math.min(1,(now()-p.t)/(SEEDS[p.s].grow*60000));return`<div class="plot ${r?'ripe':''}" onclick="gardenClick(${i})" data-tip="plot:${i}">${r?SEEDS[p.s].i:'🌱'}${r?'':`<em style="width:${pr*100}%"></em>`}</div>`;}).join('')}</div>
+    <p class="small" style="margin-top:8px">Samen wählen, auf ein leeres Feld tippen zum Pflanzen. Reife Pflanzen wirken, solange sie stehen – antippen zum Ernten. Mehr Farm-Level = größerer Garten.</p></div>`;}
+   // Börse
+   h+='<h3>🏦 Börse (Bank)</h3>';
+   if(S.lv[5]<1)h+=`<div class="box">🔒 Level die <b>Bank</b> mit einem Zuckerwürfel auf Stufe 1.</div>`;
+   else{stockInit();const s=S.stock,dl=dollar();
+    h+=`<div class="box"><p class="small" style="margin-bottom:6px">1 $ = ${fmt(dl,1)} Kekse (1 Sekunde KpS). Max. ${stockMax()} pro Ware. Kurse ändern sich jede Minute (nächste in ${clock((60000-(now()-s.t))/1000)}). Gewinn bisher: <b style="color:${s.profit>=0?'var(--good)':'var(--bad)'}">${s.profit>=0?'+':''}${s.profit.toFixed(2).replace('.',',')} $</b></p>
+    <div style="overflow-x:auto"><table class="st"><tr><th>Ware</th><th>Kurs</th><th></th><th>Besitz</th><th></th></tr>${GOODS.map((g,k)=>{const hs=s.h[k],tr=hs.length>1?hs[hs.length-1]-hs[hs.length-2]:0;return`<tr><td>${g[1]} ${g[0]}</td><td><b>${s.v[k].toFixed(2).replace('.',',')} $</b> <span style="color:${tr>=0?'var(--good)':'var(--bad)'}">${tr>=0?'▲':'▼'}</span></td><td>${spark(hs)}</td><td>${s.o[k]}${s.o[k]?`<br><span class="small">Ø ${s.avg[k].toFixed(2).replace('.',',')} $</span>`:''}</td><td style="white-space:nowrap"><button class="btn" onclick="buyStock(${k},1)">+1</button> <button class="btn" onclick="buyStock(${k},10)">+10</button> <button class="btn" onclick="buyStock(${k},'max')">Max</button><br><button class="btn" onclick="sellStock(${k},1)">−1</button> <button class="btn" onclick="sellStock(${k},10)">−10</button> <button class="btn" onclick="sellStock(${k},'max')">Alle</button></td></tr>`;}).join('')}</table></div></div>`;}
+   // Zauber
+   h+='<h3>🧙 Zauberbuch (Zauberturm)</h3>';
+   if(S.lv[7]<1)h+=`<div class="box">🔒 Level den <b>Zauberturm</b> mit einem Zuckerwürfel auf Stufe 1.</div>`;
+   else{const mm=manaMax();
+    h+=`<div class="box"><div class="row" style="justify-content:space-between"><b>🔮 Mana: ${Math.floor(S.mana)} / ${mm}</b><span class="small">Rückschlag-Chance 15 %</span></div><div class="bar" style="margin:6px 0 10px"><i style="width:${S.mana/mm*100}%;background:linear-gradient(90deg,#a6f,#d9f)"></i></div>${SPELLS.map((sp,k)=>`<div class="spell"><span class="si">${sp.i}</span><div class="sd"><b>${sp.n}</b><br>${sp.d}</div><button class="btn" ${S.mana<spellCost(sp)?'disabled':''} onclick="cast(${k})">${spellCost(sp)} 🔮</button></div>`).join('')}</div>`;}
+   break;}
+  case 5:
+   h=`<h2>⚙️ Optionen</h2><div class="box"><div class="row"><button class="btn" onclick="save(true)">💾 Speichern</button><button class="btn" onclick="exportSave()">📤 Exportieren</button><button class="btn" onclick="importSave()">📥 Importieren</button><button class="btn" onclick="renameBakery()">✏️ Bäckerei umbenennen</button></div><p class="small" style="margin-top:8px">Das Spiel speichert automatisch alle 30 Sekunden im Browser. Mit Export/Import kannst du deinen Spielstand auf ein anderes Gerät mitnehmen.</p></div>
+   <div class="box"><label class="row"><input type="checkbox" ${S.particles?'checked':''} onchange="S.particles=this.checked"> Krümel-Effekte beim Klicken</label></div>
+   <div class="box"><b style="color:var(--bad)">Gefahrenzone</b><p class="small" style="margin:6px 0">Löscht wirklich ALLES – auch Erfolge und Prestige.</p><button class="btn red" onclick="hardReset()">🗑️ Spielstand löschen</button></div>
+   <div class="box small">🍪 Cookie Clicker · ${VERSION}<br>Ein Fan-Projekt, inspiriert vom Original von Orteil.</div>`;
+   break;
+ }
+ t.innerHTML=h;t.scrollTop=st;
+}
+
+/* ================= TOOLTIP ================= */
+let tipEl=null,tipKey=null,tipTouchTimer=0;
+function tipHTML(key){
+ const ix=key.indexOf(':'),t=key.slice(0,ix),a=key.slice(ix+1);
+ if(t==='b'){const i=+a,b=B[i];if(!bShown(i))return`<h4>❓ ???</h4><p class="pr">🍪 ${fmt(bCost(i,1))}</p><p>Noch unbekannt … sammle mehr Kekse!</p>`;
+  const each=C.each[i]*C.gm,tot=each*S.b[i],p=C.raw>0?tot/C.raw:0;
+  return`<h4>${b.icon} ${b.name} <small>besitzt: ${S.b[i]}${S.lv[i]?' · Stufe '+S.lv[i]:''}</small></h4><p class="pr ${S.cookies<bCost(i,1)?'no':''}">🍪 ${fmt(bCost(i,1))}</p><p><i>${b.desc}</i></p><ul><li>Jede(r) produziert <b>${fmt(each,1)}</b> KpS</li>${S.b[i]?`<li>${S.b[i]} produzieren <b>${fmt(tot,1)}</b> KpS (${pct(p)})</li>`:''}</ul>`;}
+ if(t==='u'){const u=UP[a];if(!u)return'';const p=upPrice(u);return`<h4>${u.icon} ${u.name} ${has(u.id)?'<small>✔ gekauft</small>':''}</h4>${has(u.id)?'':`<p class="pr ${S.cookies<p?'no':''}">🍪 ${fmt(p)}</p>`}<p>${u.desc}</p>`;}
+ if(t==='a'){const x=A[+a];return S.ach[x.id]?`<h4>${x.icon} ${x.name} <small>✔ freigeschaltet</small></h4><p>${x.desc}</p>`:`<h4>🔒 ${x.name}</h4><p>${x.desc}</p>`;}
+ if(t==='h'){const h=HV[a];return`<h4>${h.i} ${h.n} ${hh(a)?'<small>✔ gekauft</small>':''}</h4>${hh(a)?'':`<p class="pr ${S.chips<h.c?'no':''}">💠 ${fmt(h.c)} Himmelschips</p>`}<p>${h.d}</p>${h.p.length&&!h.p.every(hh)?`<p class="small">Benötigt: ${h.p.map(p=>HV[p].n).join(', ')}</p>`:''}`;}
+ if(t==='wr'){const w=S.wr[+a];if(!w)return'';return`<h4>🐛 Runzler</h4><p>Hat <b>${fmt(w.e)}</b> Kekse gefressen.</p><p>Platzen lassen gibt <b>${fmt(w.e*(hh('wrk')?1.2:1.1))}</b> zurück. (${w.hp}× klicken)</p>`;}
+ if(t==='buff'){const b=S.buffs.find(x=>x.t===a);if(!b)return'';return`<h4>${b.ic} ${b.n}</h4><p>${BUFF_TXT[b.t]||('KpS ×'+fmt(b.m,1))}</p><p class="small">noch ${clock((b.end-now())/1000)}</p>`;}
+ if(t==='seed'){const s=SEEDS[+a];return`<h4>${s.i} ${s.n}</h4><p>${s.d}</p><p class="small">Wächst in ${s.grow} Min · kostet ${s.cost} Min KpS</p>`;}
+ if(t==='plot'){const p=S.garden.p[+a];if(!p)return`<h4>Leeres Feld</h4><p>Antippen: ${SEEDS[S.garden.seed].i} ${SEEDS[S.garden.seed].n} pflanzen</p>`;const s=SEEDS[p.s];return ripe(p)?`<h4>${s.i} ${s.n} – reif!</h4><p>${s.d}</p><p class="small">Antippen zum Ernten</p>`:`<h4>🌱 ${s.n}</h4><p>Reif in ${clock((s.grow*60000-(now()-p.t))/1000)}</p>`;}
+ return'';
+}
+function showTip(){
+ const html=tipHTML(tipKey);if(!html){hideTip();return;}
+ const tip=$('tip');tip.innerHTML=html;tip.style.display='block';
+ const r=tipEl.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight;
+ let x,y;
+ if(r.left-tw-10>=4){x=r.left-tw-10;y=r.top;}
+ else if(r.right+tw+10<=innerWidth-4){x=r.right+10;y=r.top;}
+ else{x=Math.max(4,Math.min(innerWidth-tw-4,r.left+r.width/2-tw/2));y=r.top-th-8;if(y<4)y=r.bottom+8;}
+ y=Math.max(4,Math.min(innerHeight-th-4,y));
+ tip.style.left=x+'px';tip.style.top=y+'px';
+}
+function hideTip(){tipEl=null;tipKey=null;$('tip').style.display='none';}
+document.addEventListener('mouseover',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t){tipEl=t;tipKey=t.dataset.tip;showTip();}else if(!tipTouchTimer)hideTip();});
+document.addEventListener('touchstart',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t){tipEl=t;tipKey=t.dataset.tip;showTip();clearTimeout(tipTouchTimer);tipTouchTimer=setTimeout(()=>{tipTouchTimer=0;hideTip();},2500);}},{passive:true});
+
+/* ================= MODAL / TOAST ================= */
+function modal(html,btns){
+ $('mbody').innerHTML=html+`<div class="mbtns">${btns.map((b,i)=>`<button class="btn ${b.c||''}" data-i="${i}">${b.t}</button>`).join('')}</div>`;
+ $('modal').classList.add('show');
+ $('mbody').querySelectorAll('.mbtns button').forEach(el=>el.onclick=()=>{const b=btns[+el.dataset.i];const keep=b.f&&b.f()===false;if(!keep)$('modal').classList.remove('show');});
+}
+function toast(txt){const d=document.createElement('div');d.className='toast';d.innerHTML=txt;$('toasts').appendChild(d);setTimeout(()=>d.remove(),4200);while($('toasts').childElementCount>4)$('toasts').firstChild.remove();}
+
+/* ================= SPEICHERN ================= */
+function save(manual){S.last=now();try{localStorage.setItem(KEY,JSON.stringify(S));if(manual)toast('💾 Gespeichert!');}catch(e){if(manual)toast('⚠️ Speichern fehlgeschlagen');}}
+function fixState(d){
+ const s=Object.assign(newState(),d);
+ const fixArr=(a,len)=>{a=Array.isArray(a)?a.slice(0,len):[];while(a.length<len)a.push(0);return a.map(x=>+x||0);};
+ s.b=fixArr(s.b,B.length);s.lv=fixArr(s.lv,B.length);
+ if(!s.garden||!Array.isArray(s.garden.p))s.garden={seed:0,p:[]};
+ if(!Array.isArray(s.wr))s.wr=[];if(!Array.isArray(s.buffs))s.buffs=[];
+ return s;
+}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw)S=fixState(JSON.parse(raw));}catch(e){console.warn(e);}}
+function exportSave(){
+ save();const txt=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+ modal(`<h2>📤 Spielstand exportieren</h2><p class="small">Kopiere den Text und bewahre ihn gut auf.</p><textarea id="exp" readonly>${txt}</textarea>`,[{t:'📋 Kopieren',f:()=>{const ta=$('exp');ta.select();try{navigator.clipboard.writeText(ta.value);toast('📋 Kopiert!');}catch(e){document.execCommand('copy');}return false;}},{t:'Schließen'}]);
+}
+function importSave(){
+ modal(`<h2>📥 Spielstand importieren</h2><p class="small">Füge deinen exportierten Text ein. Dein aktueller Spielstand wird ersetzt!</p><textarea id="imp" placeholder="Spielstand hier einfügen …"></textarea>`,[{t:'Abbrechen'},{t:'Importieren',c:'gold',f:()=>{
+  try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!Array.isArray(d.b))throw 0;S=fixState(d);S.last=now();lastTick=now();wrKey='';$('cursors').innerHTML='';golds.slice().forEach(removeGold);scheduleGC();calc();save();renderAll();toast('✅ Spielstand geladen!');}
+  catch(e){toast('⚠️ Ungültiger Spielstand');return false;}
+ }}]);
+}
+function hardReset(){
+ modal('<h2>🗑️ Wirklich alles löschen?</h2><p style="margin-top:8px">Das kann nicht rückgängig gemacht werden!</p>',[{t:'Abbrechen'},{t:'Ja, löschen',c:'red',f:()=>{localStorage.removeItem(KEY);S=newState();wrKey='';$('cursors').innerHTML='';golds.slice().forEach(removeGold);chain=null;scheduleGC();calc();renderAll();$('heaven').classList.remove('show');toast('Neuer Anfang 🍪');}}]);
+}
+
+/* ================= NEWS ================= */
+function news(){
+ const L=['Keks-Preise steigen weltweit.','Lokale Oma backt besten Keks des Jahres.','Studie: Kekse machen glücklich. Wissenschaftler wenig überrascht.','Mann verwechselt Keks mit Untersetzer – Kaffee verschüttet.','Eilmeldung: Der Keks ist immer noch rund.','Influencer isst 50 Kekse live – Chat rastet aus.','Ernährungsexperten warnen: zu wenig Kekse ist auch keine Lösung.','Umfrage: 9 von 10 Menschen mögen Kekse. Der zehnte lügt.'];
+ const st=stage(),b=S.b;
+ if(S.earned<5)L.push('Du hast das Gefühl, du solltest Kekse backen. Aber niemand will deine Kekse.','Deine ersten Kekse schmecken … okay.');
+ if(b[1])L.push('Omas schwören: „Mit Liebe gebacken.“');
+ if(b[2])L.push('Bauern melden Rekordernte bei Keks-Weizen.');
+ if(b[3])L.push('Bergleute stoßen auf riesige Schokoader.');
+ if(b[4])L.push('Neue Keksfabrik eröffnet – Anwohner riechen nur noch Vanille.');
+ if(b[5])L.push('Banken akzeptieren ab sofort Kekse als Währung.');
+ if(b[6])L.push('Mönche verehren den Großen Keks.');
+ if(b[7])L.push('Zauberer verwandelt Kritiker in Kekskrümel.');
+ if(b[8])L.push('Raumfrachter landet mit frischen Keksen vom Keksplaneten.');
+ if(b[9])L.push('Alchemisten: „Gold? Langweilig. Kekse!“');
+ if(b[10])L.push('Kekse aus dem Portal schmecken nach Zimt und Chaos.');
+ if(b[11])L.push('Zeitreisende bringen Kekse aus dem Jahr 3000 – zu knusprig.');
+ if(b[12])L.push('Physiker: Antimaterie-Kekse schmecken nach nichts – und nach allem.');
+ if(b[13])L.push('Regenbögen gibt es jetzt mit Keksgeschmack.');
+ if(b[14])L.push('Glücksmaschine zieht dreimal hintereinander die 7.');
+ if(b[15])L.push('Mathematiker finden einen Keks in einem Keks in einem Keks …');
+ if(S.earned>1e6)L.push(`Die Bäckerei ${S.name==='Deine'?'':'von '+S.name+' '}ist berühmt: ${fmt(S.earned,0,true)} Kekse gebacken!`);
+ if(st>=1)L.push('Omas sind unruhig. Sie stricken schneller als je zuvor.','Nachbarn berichten von seltsamem Murmeln aus der Bäckerei.');
+ if(st>=2)L.push('Omas starren schweigend aus dem Fenster.','Würmer im Keksteig gesichtet!');
+ if(st>=3)L=[...L,'ER IST ERWACHT.','DIE OMAS SIND EINS.','Es gibt kein Entkommen vor den Omas.'];
+ const n=$('news');n.style.animation='none';void n.offsetWidth;n.style.animation='';n.textContent='📰 '+L[Math.floor(Math.random()*L.length)];
+}
+
+/* ================= ERFOLGE CHECK ================= */
+function checkAch(){
+ let n=0;
+ for(const a of A){if(!S.ach[a.id]&&a.check()){S.ach[a.id]=1;n++;if(n<=3)toast(`🏆 Erfolg: <b>${a.name}</b>`);}}
+ if(n){calc();renderMilk();if(S.tab===1)renderTab();}
+}
+
+/* ================= LOOP ================= */
+let lastTick=now(),slowAcc=0,secAcc=0,saveAcc=0,newsAcc=0;
+function tick(){
+ const t=now();let dt=(t-lastTick)/1000;lastTick=t;
+ if(dt<=0)return;
+ if(dt>60){offline(dt);dt=0;}
+ S.played+=dt;
+ const before=S.buffs.length;S.buffs=S.buffs.filter(b=>b.end>t);if(S.buffs.length!==before)calc();
+ calc();
+ if(!S.ascending){
+  earn(C.cps*dt);
+  for(const w of S.wr)w.e+=C.cpsB*0.05*dt;
+  if(S.gcNext&&t>=S.gcNext&&!golds.some(g=>!g.storm)&&!chain){S.gcNext=t+1e10;spawnGolden();}
+  if(t<stormEnd&&Math.random()<dt*4)spawnStorm();
+  const st=stage();
+  if(st>0&&S.wr.length<10&&Math.random()<dt*0.002*st){S.wr.push({a:Math.random()*360,e:0,hp:3});}
+  if(st===0&&S.wr.length&&(has('cov')||S.pledgeEnd>t))popAll();
+  if(S.lv[7]>=1)S.mana=Math.min(manaMax(),S.mana+manaMax()/300*dt);
+ }
+ updateGolds();
+ updateHead();
+ slowAcc+=dt;secAcc+=dt;saveAcc+=dt;newsAcc+=dt;
+ if(slowAcc>=0.25){slowAcc=0;
+  updateStore();renderUps();renderBuffs();renderWrinklers();renderCursors();
+  document.body.className=document.body.className.replace(/\bg\d\b/g,'').trim()+' g'+stage();
+  if(tipEl){if(!document.body.contains(tipEl)){const n=document.querySelector(`[data-tip="${tipKey}"]`);if(n&&(n.matches(':hover')||tipTouchTimer)){tipEl=n;showTip();}else hideTip();}else showTip();}
+ }
+ if(secAcc>=1){secAcc=0;
+  checkAch();
+  if(lumpsOn()){if(!S.lumpT)S.lumpT=t;let n=0;const mt=lumpMature();while(t-S.lumpT>=mt){S.lumps++;S.lumpsTotal++;S.lumpT+=mt;n++;}if(n)toast(`🧊 ${n} Zuckerwürfel gereift!`);}
+  if(S.lv[5]>=1){stockInit();let n=0;while(t-S.stock.t>=60000&&n<60){S.stock.t+=60000;stockTick();n++;}if(n>=60)S.stock.t=t;}
+  if([0,3,4].includes(S.tab)||(S.tab===2))renderTab();
+  if(S.tab===1&&achShown!==achCount())renderTab();
+  renderTabs();
+ }
+ if(saveAcc>=30){saveAcc=0;save();}
+ if(newsAcc>=9){newsAcc=0;news();}
+}
+function offline(sec){
+ calc();const p=offlinePct();
+ if(S.lv[7]>=1)S.mana=Math.min(manaMax(),S.mana+manaMax()/300*sec);
+ if(p>0&&C.raw>0&&!S.ascending){const g=C.raw*p*sec;earn(g);
+  modal(`<h2>👋 Willkommen zurück!</h2><p style="margin-top:8px">Du warst <b>${fmtTime(sec)}</b> weg. Deine Bäckerei hat in der Zeit <b>${fmt(g,0,true)}</b> Kekse gebacken (${pct(p)} der KpS). 🍪</p>`,[{t:'Super!',c:'gold'}]);}
+ else if(sec>300&&C.raw>0&&!S.ascending)toast(`👋 Willkommen zurück! Tipp: Mit Himmels-Upgrades backst du auch offline.`);
+}
+
+/* ================= SETUP ================= */
+function sizeCookie(){const w=$('cookieWrap');const cs=Math.max(120,Math.min(300,w.clientWidth*0.62,w.clientHeight*0.72));document.documentElement.style.setProperty('--cs',cs+'px');wrKey='';$('cursors').innerHTML='';renderWrinklers();renderCursors();}
+function mobileTab(i){document.body.classList.toggle('mMid',i===1);$('mShop').classList.toggle('on',i===0);$('mMenu').classList.toggle('on',i===1);}
+function renderAll(){renderBakery();updateStore();renderUps(true);renderTabs();renderTab();renderMilk();renderBuffs();wrKey='';renderWrinklers();renderCursors();updateHead();}
+function init(){
+ load();
+ $('ver').textContent=VERSION;
+ $('bigCookie').innerHTML=BIG_SVG;
+ $('bigCookie').addEventListener('pointerdown',e=>{e.preventDefault();clickCookie(e);});
+ initStore();
+ calc();
+ const away=(now()-(S.last||now()))/1000;
+ if(!S.gcNext||S.gcNext>now()+3600000)scheduleGC();
+ lastTick=now();
+ sizeCookie();renderAll();
+ if(away>60)offline(away);
+ if(S.ascending)showHeaven(false);
+ news();
+ setInterval(tick,33);
+ addEventListener('resize',sizeCookie);
+ addEventListener('beforeunload',()=>save());
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+ document.addEventListener('contextmenu',e=>{if(e.target.closest('#bigCookie,.gc,.wr'))e.preventDefault();});
+}
+init();
+</script>
+</body>
+</html>
