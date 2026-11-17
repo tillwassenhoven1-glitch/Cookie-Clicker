@@ -850,7 +850,7 @@ function hardReset(){
 let cheatOK=false;
 function cheatLogin(){
  if(cheatOK){cheatMenu();return;}
- modal(`<h2>🔐 Cheat-Menü</h2><p class="small" style="margin:6px 0">Code eingeben:</p><input id="ccode" type="password" autocomplete="off" style="width:100%;padding:8px;border-radius:8px;border:2px solid var(--line);background:#120b06;color:var(--txt);font-size:16px">`,[{t:'Abbrechen'},{t:'Öffnen',c:'gold',f:()=>{if($('ccode').value.trim().toLowerCase()==='till'){cheatOK=true;setTimeout(cheatMenu,0);}else{toast('❌ Falscher Code');return false;}}}]);
+ modal(`<h2>🔐 Cheat-Menü</h2><p class="small" style="margin:6px 0">Code eingeben:</p><input id="ccode" type="password" autocomplete="off" style="width:100%;padding:8px;border-radius:8px;border:2px solid var(--line);background:#120b06;color:var(--txt);font-size:16px">`,[{t:'Abbrechen'},{t:'Öffnen',c:'gold',f:()=>{if($('ccode').value.trim()==='4uT2-U6G3'){cheatOK=true;setTimeout(cheatMenu,0);}else{toast('❌ Falscher Code');return false;}}}]);
  setTimeout(()=>{const i=$('ccode');if(i){i.focus();i.onkeydown=e=>{if(e.key==='Enter')$('mbody').querySelector('.btn.gold').click();};}},50);
 }
 const CHEATS=[
